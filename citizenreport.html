@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Waste Issue | Cleanova</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --emerald: #10b981;
+            --navy: #1e293b;
+            --white: #ffffff;
+            --primary: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+
+        .bg-blur-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&q=80&w=1600');
+            background-size: cover;
+            background-position: center;
+            filter: blur(12px);
+            z-index: -1;
+            transform: scale(1.1);
+        }
+
+        /* Sidebar */
+        .sidebar { 
+            position: fixed; 
+            top: 0; left: -300px; 
+            width: 280px; height: 100%; 
+            background: white; 
+            box-shadow: 10px 0 30px rgba(0,0,0,0.2); 
+            z-index: 5000; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar a { 
+            padding: 15px; text-decoration: none; color: #475569; 
+            display: flex; align-items: center; gap: 15px; 
+            font-weight: 600; border-radius: 12px; transition: 0.2s; 
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover { background: #f1f5f9; color: var(--primary); }
+
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            display: none; z-index: 4500; 
+        }
+        .overlay.active { display: block; }
+
+        /* Main UI */
+        .main-header { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            padding: 1rem 2rem; display: flex; justify-content: space-between; 
+            align-items: center; position: sticky; top: 0; z-index: 1000; 
+        }
+        .header-center { font-size: 1.5rem; font-weight: 800; color: var(--navy); position: absolute; left: 50%; transform: translateX(-50%); }
+
+        .form-container { max-width: 600px; margin: 1.5rem auto; padding: 0 1rem; }
+        .report-card { background: white; padding: 1.5rem; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+
+        #map { height: 200px; width: 100%; border-radius: 15px; margin-top: 10px; border: 2px solid #e2e8f0; cursor: pointer; }
+
+        /* Camera & Modals */
+        #cameraModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #videoFeed { width: 100%; max-width: 500px; border-radius: 12px; background: #222; }
+        .capture-btn { width: 70px; height: 70px; border-radius: 50%; border: 5px solid white; background: #ef4444; cursor: pointer; margin-top: 20px;}
+
+        /* Success Popup */
+        .success-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 2.5rem; border-radius: 24px;
+            text-align: center; z-index: 7000; width: 90%; max-width: 400px;
+            display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .input-group { margin-bottom: 1rem; }
+        label { font-weight: 700; color: #4b5563; font-size: 0.85rem; margin-bottom: 5px; display: block; }
+        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; }
+        
+        .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .media-btn { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; cursor: pointer; }
+        
+        .preview-box { display: none; margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 2px solid var(--emerald); }
+        .preview-box img { width: 100%; display: block; }
+
+        .primary-btn { background: var(--emerald); color: white; width: 100%; padding: 1rem; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; font-size: 1rem; }
+      .fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:9999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:9999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+    
+    
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur-container"></div>
+    <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Cases</a>
+        <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Cases</a>
+        <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+        <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+        <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+        <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+        <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+        <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+        <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+        <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+        <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </nav>
+
+    <div id="cameraModal">
+        <video id="videoFeed" autoplay playsinline></video>
+        <button class="capture-btn" id="captureBtn"></button>
+        <button onclick="stopCamera()" style="color:white; background:none; border:none; margin-top:20px; text-decoration:underline; cursor:pointer;">Cancel</button>
+        <canvas id="photoCanvas" style="display:none;"></canvas>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div style="background: #ecfdf5; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+            <i data-lucide="check-circle" color="#10b981" size="48"></i>
+        </div>
+        <h3>Report Successful!</h3>
+        <p>Thank you for contributing to a cleaner city. Our team has been notified.</p>
+        <button class="primary-btn" onclick="location.reload()">Back to Home</button>
+    </div>
+
+    <div class="page-wrapper">
+        <header class="main-header">
+            <button onclick="toggleSidebar()" style="background:none; border:none; cursor:pointer;">
+                <i data-lucide="menu" size="28"></i>
+            </button>
+            <div class="header-center">Cleanova</div>
+            <div style="width: 28px;"></div>
+        </header>
+
+        <main class="form-container">
+            <div class="report-card">
+                <div class="input-group">
+                    <label>Issue Title</label>
+                    <input type="text" id="issueTitle" placeholder="e.g., Overflowing Bin">
+                </div>
+
+                <div class="media-grid">
+                    <button class="media-btn" id="startCameraBtn">
+                        <i data-lucide="camera"></i> Camera
+                    </button>
+                    <label class="media-btn">
+                        <i data-lucide="image"></i> Gallery
+                        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleGalleryUpload(this)">
+                    </label>
+                </div>
+
+                <div id="previewBox" class="preview-box">
+                    <img id="imagePreview" src="">
+                </div>
+
+                <div class="input-group">
+                    <label>Location (Click Map to Open Google Maps)</label>
+                    <div id="map" onclick="openGoogleMaps()"></div>
+                    <p id="locationText" style="font-size: 0.8rem; color: #64748b; margin-top: 5px; cursor: pointer;" onclick="openGoogleMaps()">Detecting your coordinates...</p>
+                </div>
+
+                <div class="input-group">
+                    <label>Additional Details</label>
+                    <textarea rows="2" placeholder="Describe the situation..."></textarea>
+                </div>
+
+                <button class="primary-btn" onclick="handleSubmit()">Submit Report</button>
+            </div>
+        </main>
+    </div>
+         <div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let currentLat = 0, currentLon = 0;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+        function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+
+        function handleSubmit() {
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.getElementById('successModal').style.display = 'block';
+            lucide.createIcons();
+        }
+
+        // CAMERA LOGIC
+        const video = document.getElementById('videoFeed');
+        const cameraModal = document.getElementById('cameraModal');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewBox = document.getElementById('previewBox');
+        let stream = null;
+
+        document.getElementById('startCameraBtn').addEventListener('click', async () => {
+            try {
+                // Requesting camera permission
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+                cameraModal.style.display = 'flex';
+            } catch (err) { 
+                alert("Camera access denied. Please enable camera permissions in your browser settings."); 
+                console.error(err);
+            }
+        });
+
+        document.getElementById('captureBtn').addEventListener('click', () => {
+            const context = photoCanvas.getContext('2d');
+            photoCanvas.width = video.videoWidth;
+            photoCanvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            imagePreview.src = photoCanvas.toDataURL('image/png');
+            previewBox.style.display = 'block';
+            stopCamera();
+        });
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            cameraModal.style.display = 'none';
+        }
+
+        function handleGalleryUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewBox.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // MAP & GOOGLE MAPS LOGIC
+        let map = L.map('map', { dragging: false, zoomControl: false }).setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        let marker = L.marker([0, 0]).addTo(map);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                currentLat = pos.coords.latitude;
+                currentLon = pos.coords.longitude;
+                map.setView([currentLat, currentLon], 16);
+                marker.setLatLng([currentLat, currentLon]);
+                document.getElementById('locationText').innerText = `Location: ${currentLat.toFixed(5)}, ${currentLon.toFixed(5)} (Click to view on Google Maps)`;
+            }, (err) => {
+                document.getElementById('locationText').innerText = "Location access denied.";
+            }, { enableHighAccuracy: true });
+        }
+
+        function openGoogleMaps() {
+            if (currentLat !== 0) {
+                const url = `https://www.google.com/maps/search/?api=1&query=${currentLat},${currentLon}`;
+                window.open(url, '_blank');
+            } else {
+                alert("Location not detected yet.");
+            }
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

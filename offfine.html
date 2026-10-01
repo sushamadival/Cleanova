@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clean City – Fine Issues</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --green:#00c897;
+  --blue:#0077b6;
+  --red:#e63946;
+  --orange:#f39c12;
+  --bg:#f3f6fa;
+  --dark:#1f2937;
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:var(--bg);
+  padding-bottom: 80px; /* Space for FAB */
+}
+
+/* ===== HEADER ===== */
+header{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding:14px 18px;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index: 10000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#ham{
+  font-size:26px;
+  cursor:pointer;
+  width: 40px;
+}
+
+header h1{
+  flex:1;
+  text-align:center;
+  margin:0;
+  font-size:20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+/* Updated Profile Style */
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* ===== SIDE MENU ===== */
+#menu{
+  display: none; 
+  position: absolute;
+  top: 65px;
+  left: 10px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  width: 200px;
+  flex-direction: column; 
+  z-index: 9999;
+  overflow: hidden;
+}
+#menu a{
+   display: block;
+  padding: 14px 20px;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#menu a:hover{
+   background: var(--green);
+  color: white;
+}
+
+/* ===== GRID & CARDS ===== */
+.container{
+  padding:18px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px, 1fr));
+  gap:20px;
+}
+
+.title-section {
+    padding: 20px 18px 0 18px;
+    text-align: center;
+}
+
+.title-section h2 {
+    margin: 0;
+    color: var(--dark);
+    font-size: 24px;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:18px;
+  position:relative;
+  box-shadow:0 10px 20px rgba(0,0,0,0.05);
+  cursor:pointer;
+  transition:all 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+.card.expired::before{
+  content:"EXPIRED";
+  position:absolute;
+  top:18px;
+  right:-35px;
+  background:var(--red);
+  color:#fff;
+  padding:4px 40px;
+  font-size:10px;
+  font-weight: bold;
+  transform:rotate(45deg);
+}
+
+.top { display:flex; align-items:center; gap:15px; }
+
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size: 20px;
+}
+
+.name{ font-weight:600; font-size:17px; color: var(--dark); }
+
+.fine{
+  margin:15px 0 5px 0;
+  font-size:24px;
+  font-weight:700;
+  color:var(--dark);
+}
+
+.status{
+  display:inline-block;
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  text-transform: uppercase;
+}
+
+.status.expired{ background:#ffe5e5; color:var(--red); }
+.status.active{ background:#e6fff7; color:var(--green); }
+.status.warning{ background:#fff4e5; color:var(--orange); }
+
+/* ===== POPUPS ===== */
+.popup, .action-popup{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+  z-index: 20000;
+}
+
+.popup-content{
+  background:#fff;
+  width:90%;
+  max-width:380px;
+  padding:30px;
+  border-radius:25px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.popup-content h2 { margin-top: 0; color: var(--dark); font-size: 22px; }
+.popup-content p { border-bottom: 1px solid #eee; padding: 10px 0; margin: 0; }
+
+.popup-content button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight: 600;
+  cursor:pointer;
+  background:var(--green);
+  color:#fff;
+}
+
+.popup-content .close{ background:#f0f0f0; color:#666; }
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div id="ham" onclick="toggleMenu()">☰</div>
+  <h1>Cleanova</h1>
+  <div class="profile-img">
+    <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=00c897" alt="Profile" style="width:100%; height:100%;">
+  </div>
+</header>
+
+<div class="title-section">
+    <h2>Fine List</h2>
+</div>
+
+<div id="menu">
+   <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+</div>
+
+<div class="container" id="cards"></div>
+
+<div class="popup" id="detailsPopup">
+  <div class="popup-content">
+    <h2>Fine Details</h2>
+    <p><b>Name:</b> <span id="pName"></span></p>
+    <p><b>Phone:</b> <span id="pPhone"></span></p>
+    <p><b>Amount:</b> ₹<span id="pFine"></span></p>
+    <p><b>Status:</b> <span id="pTime"></span></p>
+    <button onclick="openAction()">Take Action</button>
+    <button class="close" onclick="closePopup()">Close</button>
+  </div>
+</div>
+
+<div class="action-popup" id="actionPopup">
+  <div class="popup-content">
+    <h2>Select Action</h2>
+    <button onclick="alert('Fine Increased')">Increase Fine (Late Fee)</button>
+    <button onclick="alert('Home Visit Scheduled')">Schedule Field Visit</button>
+    <button onclick="alert('Warning Issued')">Send Legal Warning</button>
+    <button class="close" onclick="closeAction()">Back</button>
+  </div>
+</div>
+
+
+<script>
+const data=[
+  {name:"Ramesh Kumar", phone:"9876543210", fine:1000, time:"Expired"},
+  {name:"Suresh Naik", phone:"9123456789", fine:800, time:"Expired"},
+  {name:"Anitha Shetty", phone:"9988776655", fine:300, time:"Expired"},
+  {name:"Rahul Poojary", phone:"9012345678", fine:1200, time:"Expired"},
+  {name:"Priya D'Souza", phone:"9845012345", fine:1500, time:"Expired"},
+  {name:"Kiran Bhat", phone:"9876501234", fine:700, time:"1 Day Left"},
+  {name:"Meena Rao", phone:"9765432109", fine:400, time:"2 Days Left"},
+  {name:"Deepak Jain", phone:"9898989898", fine:600, time:"3 Days Left"},
+  {name:"Lakshmi Pai", phone:"9090909090", fine:500, time:"5 Days Left"},
+  {name:"Arjun Shetty", phone:"8888777766", fine:900, time:"2 Days Left"},
+  {name:"Pooja Kulal", phone:"7777666655", fine:350, time:"4 Days Left"},
+  {name:"Vikram Singh", phone:"9444555666", fine:2000, time:"1 Day Left"},
+  {name:"Sneha Hegde", phone:"9111222333", fine:450, time:"6 Days Left"},
+  {name:"Mohit Verma", phone:"9222333444", fine:1100, time:"Expired"},
+  {name:"Sara Khan", phone:"9000111222", fine:250, time:"10 Days Left"}
+];
+
+const box=document.getElementById("cards");
+
+function renderCards() {
+  data.sort((a,b)=>a.time==="Expired"?-1:1);
+  box.innerHTML = "";
+  
+  data.forEach(p=>{
+    const c=document.createElement("div");
+    const isExpired = p.time === "Expired";
+    const isWarning = p.time.includes("1 Day");
+    
+    c.className="card"+(isExpired?" expired":"");
+    
+    let statusClass = "active";
+    if(isExpired) statusClass = "expired";
+    else if(isWarning) statusClass = "warning";
+
+    c.innerHTML=`
+      <div class="top">
+        <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <div class="name">${p.name}</div>
+          <div class="status ${statusClass}">${p.time}</div>
+        </div>
+      </div>
+      <div class="fine">₹${p.fine}</div>
+      <i class="fa-solid fa-chevron-right" style="position:absolute; bottom:20px; right:20px; color:#ddd"></i>
+    `;
+    c.onclick=()=>openPopup(p);
+    box.appendChild(c);
+  });
+}
+
+function toggleMenu(){
+  const m=document.getElementById("menu");
+  const h=document.getElementById("ham");
+  if(m.style.display==="block"){
+    m.style.display="none"; h.innerHTML="☰";
+  }else{
+    m.style.display="block"; h.innerHTML="✕";
+  }
+}
+
+function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+
+function openPopup(p){
+  document.getElementById("pName").innerText=p.name;
+  document.getElementById("pPhone").innerText=p.phone;
+  document.getElementById("pFine").innerText=p.fine;
+  document.getElementById("pTime").innerText=p.time;
+  document.getElementById("detailsPopup").style.display="flex";
+}
+
+function closePopup(){ document.getElementById("detailsPopup").style.display="none"; }
+function openAction(){ closePopup(); document.getElementById("actionPopup").style.display="flex"; }
+function closeAction(){ document.getElementById("actionPopup").style.display="none"; }
+
+window.onclick = function(event) {
+  if (!event.target.closest('#ham') && !event.target.closest('#menu')) {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("ham").innerHTML = "☰";
+  }
+  if (!event.target.closest('.fab') && !event.target.closest('.fab-menu')) {
+    document.getElementById("fabMenu").style.display = "none";
+  }
+}
+
+renderCards();
+</script>
+
+</body>
+</html>

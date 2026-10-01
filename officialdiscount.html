@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanova | Rewards & Discounts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .blur-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkWtQQ_a-Pej13KM-3PEnl2unqa7Q7sPwYew&s');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.758);
+            backdrop-filter: blur(100px);
+            transition: transform 0.3s ease;
+        }
+        .glass:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="blur-bg min-h-screen font-sans text-gray-800">
+
+    <header class="p-6 bg-white/90 backdrop-blur-md shadow-lg flex justify-between items-center sticky top-0 z-50">
+        <div class="text-left leading-tight">
+            <h1 class="text-xl font-bold text-green-700">Cleanova Systems</h1>
+            <p class="text-sm text-gray-600">Department of Sanitation</p>
+            <p class="text-xs text-gray-500">Live Status: Active</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm font-medium hidden md:block">Officer Dashboard</span>
+            <div class="w-12 h-12 rounded-full border-2 border-green-500 p-1">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=10b981&color=fff" alt="Profile" class="rounded-full">
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <h2 class="text-4xl font-extrabold text-white mb-8 text-center drop-shadow-md">Available Discount Offers</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="discountGrid">
+            </div>
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in duration-300">
+            <div id="modalHeader" class="bg-green-600 p-6 text-white">
+                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                <p id="modalOfferType" class="text-green-100 font-medium italic"></p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <h4 class="font-bold text-gray-700">Issue Description:</h4>
+                    <p id="modalDesc" class="text-gray-600 text-sm"></p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-700 mb-2">Recent Beneficiaries (3 Users):</h4>
+                    <ul id="memberList" class="space-y-2 text-sm">
+                        </ul>
+                </div>
+                <div class="flex justify-between items-center pt-4 border-t">
+                    <span class="text-sm text-gray-500"><i class="fa fa-users mr-1"></i> <span id="memberCount"></span> members claimed</span>
+                    <button onclick="closeModal()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-bold transition">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for the 10 offers
+        const offers = [
+            { id: 1, issue: "Missed Bin Collection", type: "Home Bill Discount (15%)", desc: "For residents whose waste was not collected on the scheduled date.", count: 145, members: ["Alice Chen", "Bob Smith", "Charlie Davis"] },
+            { id: 2, issue: "Incorrect Waste Sorting", type: "Water Bill Discount (10%)", desc: "Reported instances of staff mixing dry and wet waste.", count: 89, members: ["David Lee", "Eva Green", "Frank Wright"] },
+            { id: 3, issue: "Illegal Street Dumping", type: "Property Tax Credit", desc: "Incentive for citizens reporting illegal dumpsites in their ward.", count: 210, members: ["Grace Ho", "Henry Ford", "Ivy Quinn"] },
+            { id: 4, issue: "Public Toilet Uncleanliness", type: "Water Bill Discount (5%)", desc: "Issues related to water shortage or lack of hygiene in public areas.", count: 56, members: ["Jack Ma", "Kelly Rose", "Liam Neeson"] },
+            { id: 5, issue: "Delayed Septic Pumping", type: "Home Bill Discount (20%)", desc: "Service delay exceeding 48 hours for tank cleaning.", count: 34, members: ["Mona Lisa", "Noah Ark", "Olivia Pope"] },
+            { id: 6, issue: "Damaged Dustbins", type: "New Bin Subsidy", desc: "Replacement for community bins damaged by heavy machinery.", count: 112, members: ["Peter Parker", "Quinn Fab", "Riley Reid"] },
+            { id: 7, issue: "Hazardous Waste Spillage", type: "Health Insurance Rebate", desc: "Reporting toxic leaks or industrial waste in residential zones.", count: 22, members: ["Steve Jobs", "Tina Fey", "Uma Thurman"] },
+            { id: 8, issue: "Clogged Sewerage Lines", type: "Water Bill Discount (12%)", desc: "Discounts provided due to delayed drainage maintenance during rains.", count: 167, members: ["Victor Hugo", "Wendy Wu", "Xavier Zen"] },
+            { id: 9, issue: "Stray Animal Nuisance", type: "Community Fund Discount", desc: "Issues with stray management at waste collection centers.", count: 45, members: ["Yara Shah", "Zack King", "Adam West"] },
+            { id: 10, issue: "Incomplete Road Sweeping", type: "Street Maintenance Credit", desc: "Issues with regular sweeping schedules on major roads.", count: 78, members: ["Bella Thorne", "Caleb J", "Diana Prince"] }
+        ];
+
+        // Populate Grid
+        const grid = document.getElementById('discountGrid');
+        offers.forEach(offer => {
+            const card = document.createElement('div');
+            card.className = "glass p-6 rounded-xl shadow-xl cursor-pointer";
+            card.onclick = () => openModal(offer);
+            card.innerHTML = `
+                <div class="text-green-600 mb-2"><i class="fa fa-tag fa-lg"></i></div>
+                <h3 class="text-xl font-bold mb-2">${offer.issue}</h3>
+                <p class="text-gray-600 text-sm line-clamp-2">${offer.desc}</p>
+                <div class="mt-4 text-green-700 font-bold text-sm">View Details →</div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Modal Logic
+        function openModal(offer) {
+            document.getElementById('modalTitle').innerText = offer.issue;
+            document.getElementById('modalOfferType').innerText = offer.type;
+            document.getElementById('modalDesc').innerText = offer.desc;
+            document.getElementById('memberCount').innerText = offer.count;
+            
+            const list = document.getElementById('memberList');
+            list.innerHTML = offer.members.map(m => `
+                <li class="flex justify-between border-b border-gray-100 pb-1">
+                    <span class="font-medium text-gray-800">${m}</span>
+                    <span class="text-green-600 font-bold">Applied</span>
+                </li>
+            `).join('');
+
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

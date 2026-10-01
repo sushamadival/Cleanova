@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanova | Reported Issues Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Blur Effect */
+        .bg-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR94aI7hTaWt3vKYd1fmB3IN6g35X1M6A_Uag&s');
+            background-size: cover;
+            filter: blur(8px) brightness(0.6);
+            z-index: -1;
+        }
+
+        /* HEADER STYLING */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 5%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Left, Center, Right */
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        
+        .header-center h1 {
+            color: #2ecc71;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .header-right { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
+
+        .menu-icon, .header-right i {
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .header-right i:hover, .menu-icon:hover { color: #2ecc71; }
+
+        /* SIDEBAR STYLING */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 1.2rem;
+        }
+
+        .sidebar a {
+            padding: 12px 25px;
+            text-decoration: none;
+            font-size: 1rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #f0fff4;
+            color: #2ecc71;
+            padding-left: 35px;
+        }
+
+        .sidebar i { width: 25px; font-size: 1.1rem; }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+        .overlay.active { display: block; }
+
+        /* GRID LAYOUT */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px 5%;
+        }
+
+        .issue-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .issue-card:hover { transform: translateY(-5px); }
+        .issue-card img { width: 100%; height: 180px; object-fit: cover; }
+        .issue-card h3 { padding: 15px; font-size: 0.95rem; text-align: center; color: #444; }
+
+        /* MODAL STYLING */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 15px;
+            position: relative;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .close-btn { position: absolute; right: 20px; top: 10px; font-size: 2rem; cursor: pointer; color: #666; }
+        .modal-body { display: flex; gap: 30px; }
+        .modal-body img { width: 50%; border-radius: 10px; object-fit: cover; }
+        .modal-info h2 { margin-bottom: 15px; color: #2ecc71; }
+        .modal-info p { margin-bottom: 10px; line-height: 1.6; font-size: 0.95rem; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) { .grid-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            header { grid-template-columns: auto 1fr auto; }
+            .header-center h1 { font-size: 1.4rem; }
+            .modal-body { flex-direction: column; }
+            .modal-body img { width: 100%; height: 200px; }
+        }
+        @media (max-width: 600px) { .grid-container { grid-template-columns: 1fr; } }
+                /* ===== FLOATING MENU ===== */
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:9999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:9999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur"></div>
+    <div class="overlay" id="overlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Cases</a>
+        <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Cases</a>
+        <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+        <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+        <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+        <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+        <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+        <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+        <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+        <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+        <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </nav>
+
+
+    <header>
+        <div class="header-left">
+            <i class="fas fa-bars menu-icon" id="menuBtn"></i>
+            <span style="font-weight: 600; font-size: medium; color: #444;">Reported Issues</span>
+        </div>
+        
+        <div class="header-center">
+            <h1>Cleanova</h1>
+        </div>
+
+        <div class="header-right">
+            <i class="fa-solid fa-circle-user" title="Profile" style="color: #2ecc71; font-size: 1.8rem;"></i>
+        </div>
+    </header>
+
+    <main class="grid-container" id="issueGrid"></main>
+
+    <div class="modal" id="issueModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-body">
+                <img src="" alt="Issue Image" id="modalImg">
+                <div class="modal-info">
+                    <h2 id="modalTitle">Issue Name</h2>
+                    <p><strong>Date:</strong> <span id="modalDate"></span></p>
+                    <p><strong>Time:</strong> <span id="modalTime"></span></p>
+                    <p><strong>Place:</strong> <span id="modalPlace"></span></p>
+                    <p><strong>Description:</strong> <span id="modalDesc"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+
+    <script>
+        const issuesData = [
+            { name: "Roadside Waste Dumping", img: "https://images.deccanchronicle.com/dc-Cover-m72629tg5u6ccdcs8li6d78g23-20190208020318.Medi.jpeg", date: "2025-05-01", time: "08:00 AM", place: "Main Highway manglore", desc: "people throw garbage on roadsides instead of using dustbins ,causing bad smell and diseases" },
+            { name: "Overflowing Dustbin", img: "https://media.gettyimages.com/id/1979742560/photo/an-overflowing-container-filled-with-a-variety-of-drink-cans.jpg?s=612x612&w=gi&k=20&c=CkwnRPjtd_Di3eIZeUBgo8z84RpHv99iocPVZpFPDSE=", date: "2025-05-02", time: "09:30 AM", place: "udupi", desc: "public dustbins are not cleaned regularly, so waste spills onto the road" },
+            { name: "No Waste Segregation", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBhuz1HyVYFYcSMqQzdjXxHgX84H5vZqyx-A&s", date: "2025-05-03", time: "10:15 AM", place: "puttur", desc: "wet waste and dry waste mixed together, making recycling difficult" },
+            { name: "Plastic Waste Misuse", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH1jgiabyZ8_iVutGkQOX2RJvVfnrqAo84ZA&s", date: "2025-05-04", time: "11:00 AM", place: "banglore", desc: "excessive use of plastic covers and bottles pollutes the environment" },
+            { name: "Burning of Waste", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPsBV4c23e9Kr9BeirgWx4DVzDtsYH-h3iZA&s", date: "2025-08-6",time: "12:09 AM", place: "banglore",desc: "garbage is burnt in open areas, causing air pollution and health problems"},
+            { name: "Improper E-waste Disposal", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZvhIz-O8Lf_Mwh-sA44MOnxEkhOuygSJmqw&s", date: "2025-05-06", time: "02:20 PM", place: "nagahalli", desc: "old mobiles,batteries, and charges are thrown with regular waste" },
+            { name: "Food Wastage", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTpgTbkqLoyfAreuuEmKYmNVnSkgkhrdGCJg&s", date: "2025-05-07", time: "11:45 PM", place: "haveri", desc: "large amounts of food are wasted in functions , hostels, and hotels " },
+            { name: "Construction Waste", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjJvpJd1CeXaeHNTj9eGNVtgIAao6A_jsGmg&s", date: "2025-05-08", time: "03:10 PM", place: "sullya", desc: "sand,bricks, and debris are dumped on roads after construction work" },
+            { name: "Drainage Blockage", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrXRWoXSHhZLONEINqLkKNHabLU7HqLfC0Hw&s", date: "2025-05-19,", time: "07:00 AM", place: "kasargoad", desc: "plastic and waste block drains , leading to water stagnaton and flooding" },
+            { name: "Garbage Near School", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRFvpfYJ3MoD3iT2QKMlApQnSPmDqNB7IscQ&s", date: "2024-05-10", time: "08:15 AM", place: "kavu", desc: "waste dumped near educational institutions creates unhygienic conditions" },
+            { name: "Waste in Water", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSofogjtY37nT7Vwosq-HMh2Br4B3ENDvtgWg&s", date: "2024-05-11", time: "04:00 PM", place: "kerala", desc: "people throw waste into lakes ,rivers, and ponds,polluting water" },
+            { name: "Animal Death (Plastic)", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO9sdS1EnQshQZ-XM5oLtS4wLYlDm_IsbBuQ&s", date: "2024-05-12", time: "12:30 PM", place: "mysore", desc: "stray animals eat plastic waste and fall sick or die" },
+            { name: "Irregular Collection", img: "https://www.tribuneindia.com/sortd-service/imaginary/v22-01/jpg/large/high?url=dGhldHJpYnVuZS1zb3J0ZC1wcm8tcHJvZC1zb3J0ZC9tZWRpYWUwNTM3MDQwLTRlOGItMTFlZi1iYzk5LTU5NWQzNjU3MDFiYS5qcGc=", date: "2024-05-13", time: "09:00 AM", place: "banglore", desc: "muncipal vehicles do not collect waste daily in some areas" },
+            { name: "Market Area Waste", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW8t3VeYObw-2SELUkJSP-JKb2wUA16Lir0g&s", date: "2024-05-14", time: "08:45 PM", place: "manglore", desc: "vegetables and fish waste left uncovered causes foul smell" },
+            { name: "Sanitary Waste", img: "https://c8.alamy.com/comp/2BY6R5X/used-sanitary-napkins-surgical-face-mask-and-plastic-in-the-trash-infectious-waste-management-concept-waste-separation-unhygienic-garbage-trash-2BY6R5X.jpg", date: "2024-05-15", time: "10:00 AM", place: "mysore", desc: "sanitory pads and diapers are thrown openly, causing health risks" },
+            { name: "Lack of Public Dustbin", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzgVn2fWdrCFrILcLi3y6CKV-x6s36LPBsJA&s", date: "2024-05-16", time: "01:00 PM", place: "puttur", desc: "no dustbins in bus stops,parks and markets" },
+            { name: "Industrial Waste", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3H3vERviiBaxYr9_sZ8Kq7dIXeIZ7f-zpTA&s", date: "2024-05-17", time: "11:20 AM", place: "kavu", desc: "produced by factories and industries such as chemicals,metal scraps,and sludge" },
+            { name: "Toxic Runoff", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw0HZAo0R-WRIWyEBlW2IKVD9r6mWJuYjHoQ&s", date: "2024-05-18", time: "05:30 PM", place: "bc road", desc: "harmful chemicals from factories,farms or roads mix with rain waterand flow into rivers,lakes or soil" },
+            { name: "Littered Parks", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1G5DZG6jPEGLLH1CUToIhqbhKpj-nWtPvpA&s", date: "2024-05-19", time: "07:45 AM", place: "mani", desc: "public parks filled withtrash like plastic bottles ,food wrappers,and papers" },
+            { name: "Illegal Landfill", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBqSnzaiU_OplTlTsOIbgVmQ3R4nfJY8-4eg&s", date: "2024-05-20", time: "02:00 PM", place: "kabaka", desc: "place where waste is dumped without government permision or proper treatment" }
+        ];
+
+        const grid = document.getElementById('issueGrid');
+        const modal = document.getElementById('issueModal');
+        const closeBtn = document.querySelector('.close-btn');
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        // Toggle Sidebar
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        menuBtn.onclick = toggleMenu;
+        overlay.onclick = toggleMenu;
+
+        // Populate Grid
+        issuesData.forEach((issue) => {
+            const card = document.createElement('div');
+            card.className = 'issue-card';
+            card.innerHTML = `
+                <img src="${issue.img}" alt="${issue.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Missing'">
+                <h3>${issue.name}</h3>
+            `;
+            card.onclick = () => openModal(issue);
+            grid.appendChild(card);
+        });
+
+        function openModal(issue) {
+            document.getElementById('modalTitle').innerText = issue.name;
+            document.getElementById('modalImg').src = issue.img;
+            document.getElementById('modalDate').innerText = issue.date;
+            document.getElementById('modalTime').innerText = issue.time;
+            document.getElementById('modalPlace').innerText = issue.place;
+            document.getElementById('modalDesc').innerText = issue.desc;
+            modal.style.display = 'flex';
+        }
+
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; };
+         function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+    </script>
+</body>
+</html>

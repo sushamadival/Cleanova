@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clean City | In Progress Issues</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --green:#00d09c;
+  --blue:#00a3ff;
+  --dark:#102a2c;
+  --bg:#eefbf7;
+}
+
+body{ margin:0; font-family:'Poppins', sans-serif; background:var(--bg); color:#333; }
+
+/* ===== HEADER ===== */
+header{
+  display:grid; grid-template-columns:40px 1fr 40px; align-items:center;
+  padding:14px 18px; background:linear-gradient(90deg,#00d09c,#007cf0);
+  color:white; position:sticky; top:0; z-index:1000;
+}
+.hamburger{ font-size:26px; cursor:pointer; }
+header h1{ text-align:center; margin:0; font-size:22px; }
+header h2 {
+ position: relative;
+  right: 1150px;   /* 👈 shifts right */
+  margin: 0;
+  font-size:20px;
+}
+header img{ width:40px; border-radius:50%; }
+
+/* SIDE MENU */
+.menu-popup {
+  display: none; position: absolute; top: 65px; left: 10px;
+  background: white; box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  border-radius: 12px; width: 220px; flex-direction: column; z-index: 9999; overflow: hidden;
+}
+.menu-popup a {
+  display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+  text-decoration: none; color: #333; font-size: 16px; border-bottom: 1px solid #f0f0f0;
+}
+.menu-popup a:hover { background: var(--green); color: white; }
+
+/* ===== STATS ===== */
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:15px; padding:20px; }
+.stat{ background:white; border-radius:16px; padding:18px; box-shadow:0 10px 25px rgba(0,0,0,0.05); text-align:center; }
+.stat i{ font-size:24px; color:var(--green); margin-bottom: 5px;}
+
+/* ===== FILTERS & SEARCH ===== */
+.filters{ display:flex; gap:10px; justify-content:center; margin-bottom:15px; flex-wrap: wrap; }
+.filter{ 
+  padding:8px 16px; border-radius:20px; background:white; cursor:pointer; 
+  box-shadow:0 4px 10px rgba(0,0,0,0.1); text-decoration: none; color: #333; font-size: 14px;
+}
+.filter.active { background:var(--green); color:white; }
+
+.search{ display:flex; justify-content:center; margin-bottom:20px; }
+.search input{ width:85%; max-width:400px; padding:12px; border-radius:12px; border:none; outline:none; box-shadow:0 6px 15px rgba(0,0,0,0.1); }
+
+/* ===== ISSUES GRID ===== */
+.issues{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; padding:20px; }
+.card{ background:white; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,0.08); cursor:pointer; position: relative; transition:0.3s; }
+.card:hover{ transform:translateY(-8px); }
+.card img{ width:100%; height:180px; object-fit:cover; display: block; }
+.overlay { position: absolute; top: 0; left: 0; width: 100%; height: 180px; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: 0.3s; z-index: 10; }
+.card:hover .overlay { opacity: 1; }
+.card-content{ padding:14px; }
+.badge{ padding:4px 12px; border-radius:20px; font-size:12px; font-weight: bold; }
+.inprogress{ background:#e1f5fe; color:#0288d1; }
+
+/* ===== POPUPS ===== */
+.popup{ position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:10000; padding:20px; }
+.popup-box{ background:white; width:90%; max-width:400px; border-radius:20px; padding:20px; position: relative; max-height: 90vh; overflow-y: auto; }
+.close{ position: absolute; top: 15px; right: 15px; font-size:24px; cursor:pointer; color:#ff5252; z-index: 10; }
+
+.btn-update { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 12px; background: var(--green); color: white; font-weight: bold; cursor: pointer; }
+.btn-submit { width: 100%; padding: 12px; border: none; border-radius: 12px; background: var(--green); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+.btn-cancel { background: #eee; color: #666; width: 100%; padding: 12px; border: none; border-radius: 12px; margin-top: 10px; cursor: pointer; }
+
+/* FORM ELEMENTS */
+.update-form label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
+.update-form input, .update-form textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+.file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.file-grid label { background: #f9f9f9; border: 1px dashed var(--green); padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; margin: 0; color: var(--green); font-size: 14px; }
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hamburger" onclick="toggleHeaderMenu(event)">☰</div>
+  <div class="menu-popup" id="menuPopup">
+     <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+  </div>
+  <h1>Cleanova</h1>
+  <h2><nobr><i class="fa-solid fa-spinner"></i>In Progress Issues</nobr></h2>
+</header>
+
+<div class="stats">
+  <div class="stat"><i class="fa-solid fa-check"></i><h2>128 Solved</h2></div>
+  <div class="stat"><i class="fa-solid fa-spinner"></i><h2>14 Progress</h2></div>
+  <div class="stat"><i class="fa-solid fa-users"></i><h2>200 Reports</h2></div>
+</div>
+
+<div class="filters">
+   <a href="offsolved.html" class="filter">Solved</a>
+  <a href="#" class="filter active">In progress</a>
+   <a href="offreported.html" class="filter">Reported</a>
+</div>
+
+<div class="search">
+  <input type="text" placeholder="Search issues...">
+</div>
+
+<div class="issues">
+  <div class="card" onclick="openDetails('In Progress', 'Roadside litter clean up', 'Puttur', '30 August 2025', 'https://static.vecteezy.com/system/resources/previews/065/335/304/large_2x/roadside-litter-with-traffic-cone-and-workers-cleaning-up-trash-on-the-highway-shoulder-area-photo.jpeg')">
+    <div class="overlay">View Details</div>
+    <img src="https://static.vecteezy.com/system/resources/previews/065/335/304/large_2x/roadside-litter-with-traffic-cone-and-workers-cleaning-up-trash-on-the-highway-shoulder-area-photo.jpeg">
+    <div class="card-content"><h4>Roadside litter clean up</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Stream cleanup', 'Nagara', '27 January 2025', 'https://raleighnc.gov/sites/default/files/styles/16_9_384x216/public/2019-11/stream-cleanup-volunteer.jpg?itok=yp2TYwVO')">
+    <div class="overlay">View Details</div>
+    <img src="https://raleighnc.gov/sites/default/files/styles/16_9_384x216/public/2019-11/stream-cleanup-volunteer.jpg?itok=yp2TYwVO">
+    <div class="card-content"><h4>Stream cleanup</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Dump clearing', 'Highway', '03 March 2025', 'https://www.mercurynews.com/wp-content/uploads/2018/04/sjm-l-litter-0422-02.jpg?w=525')">
+    <div class="overlay">View Details</div>
+    <img src="https://www.mercurynews.com/wp-content/uploads/2018/04/sjm-l-litter-0422-02.jpg?w=525">
+    <div class="card-content"><h4>Dump clearing</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Road side dumping cleaning', 'Highway', '22 December 2025', 'https://static.toiimg.com/thumb/msid-125353849,imgsize-70512,width-400,height-225,resizemode-72/sweeping-change-118-truckloads-of-waste-cleared-in-mega-clean-up-drive-in-bengaluru.jpg')">
+    <div class="overlay">View Details</div>
+    <img src="https://static.toiimg.com/thumb/msid-125353849,imgsize-70512,width-400,height-225,resizemode-72/sweeping-change-118-truckloads-of-waste-cleared-in-mega-clean-up-drive-in-bengaluru.jpg">
+    <div class="card-content"><h4>Road side dumping cleaning</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'water trash clearing', 'MG Road', '09 January 2025', 'https://img.freepik.com/premium-photo/men-cleaning-garbage-water_1048944-14810804.jpg')">
+    <div class="overlay">View Details</div>
+    <img src="https://img.freepik.com/premium-photo/men-cleaning-garbage-water_1048944-14810804.jpg">
+    <div class="card-content"><h4>water trash clearing</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Road side trash cleaning', 'Punacha', '19 June 2025', 'https://media.gettyimages.com/id/1479372148/photo/collecting-litter-from-the-side-of-the-road.jpg?s=612x612&w=gi&k=20&c=B_DI66Vn8MHoigGW-Gsl-Mec8MRt_prEqnkcx2ICygs=')">
+    <div class="overlay">View Details</div>
+    <img src="https://media.gettyimages.com/id/1479372148/photo/collecting-litter-from-the-side-of-the-road.jpg?s=612x612&w=gi&k=20&c=B_DI66Vn8MHoigGW-Gsl-Mec8MRt_prEqnkcx2ICygs=">
+    <div class="card-content"><h4>Road side trash cleaning</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Garbage not collected', 'Bypass', '10 October 2025', 'https://media.assettype.com/deccanherald%2Fimport%2Fsites%2Fdh%2Ffiles%2Farticleimages%2F2022%2F08%2F28%2Ffile7cixwh43yc9xko2el27-1140008-1661640526.jpg?w=undefined&auto=format%2Ccompress&fit=max')">
+    <div class="overlay">View Details</div>
+    <img src="https://media.assettype.com/deccanherald%2Fimport%2Fsites%2Fdh%2Ffiles%2Farticleimages%2F2022%2F08%2F28%2Ffile7cixwh43yc9xko2el27-1140008-1661640526.jpg?w=undefined&auto=format%2Ccompress&fit=max">
+    <div class="card-content"><h4>Garbage not collected</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Lake cleanup', 'Lotus Lake', '19 Febraury 2025', 'https://images.unsplash.com/photo-1758599668949-5118d71838fd?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+    <div class="overlay">View Details</div>
+    <img src="https://images.unsplash.com/photo-1758599668949-5118d71838fd?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    <div class="card-content"><h4>Lake cleanup</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Roadside dumping', 'Highway', '09 Febraury 2025', 'https://th-i.thgim.com/public/incoming/72yre2/article67822960.ece/alternates/FREE_1200/08_Someshwara%201.jpg')">
+    <div class="overlay">View Details</div>
+    <img src="https://th-i.thgim.com/public/incoming/72yre2/article67822960.ece/alternates/FREE_1200/08_Someshwara%201.jpg">
+    <div class="card-content"><h4>Roadside dumping</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+
+  <div class="card" onclick="openDetails('In Progress', 'Lake Area', 'Bolwar', '11 June 2025', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw3npwKEYpjfQ74CKLUGf-J7mhs7Xb_XSAjw&s')">
+    <div class="overlay">View Details</div>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw3npwKEYpjfQ74CKLUGf-J7mhs7Xb_XSAjw&s">
+    <div class="card-content"><h4>Lake Area</h4><span class="badge inprogress">In Progress</span></div>
+  </div>
+</div>
+
+<div class="popup" id="detailsPopup">
+  <div class="popup-box">
+    <div class="close" onclick="closePopup('detailsPopup')">✖</div>
+    <img id="pImg" style="width:100%; border-radius:12px;">
+    <div class="popup-info">
+      <h3 id="pDesc" style="margin:15px 0 10px 0;"></h3>
+      <p><b>Status:</b> <span id="pStatus" style="color:var(--blue); font-weight:bold;"></span></p>
+      <p><b>Area:</b> <span id="pArea"></span></p>
+      <p><b>Reported:</b> <span id="pDate"></span></p>
+      <button class="btn-update" onclick="openUpdateForm()">Update Issue</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="updatePopup">
+  <div class="popup-box">
+    <div class="close" onclick="closePopup('updatePopup')">✖</div>
+    <h3>Update Progress</h3>
+    <div class="update-form">
+      <label>Date of Action</label>
+      <input type="date">
+      <label>Upload Proof Photo</label>
+      <div class="file-grid">
+        <label for="cam"><i class="fa-solid fa-camera"></i> Camera</label>
+        <input type="file" id="cam" capture="environment" accept="image/*" style="display:none">
+        <label for="gal"><i class="fa-solid fa-image"></i> Gallery</label>
+        <input type="file" id="gal" accept="image/*" style="display:none">
+      </div>
+      <label>Action Taken Notes</label>
+      <textarea placeholder="e.g. Cleared 50% of the site..."></textarea>
+      <button class="btn-submit" onclick="showConfirm()">Upload Update</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="confirmPopup">
+  <div class="popup-box" style="text-align:center;">
+    <h3>Are you sure?</h3>
+    <p>Do you want to submit this progress update for final verification?</p>
+    <button class="btn-submit" onclick="showSuccess()">Submit Now</button>
+    <button class="btn-cancel" onclick="closePopup('confirmPopup')">Cancel</button>
+  </div>
+</div>
+
+<div class="popup" id="successPopup">
+  <div class="popup-box" style="text-align:center;">
+    <i class="fa-solid fa-circle-check" style="font-size:50px; color:var(--green);"></i>
+    <h2 style="margin-top:15px;">Successfully Updated!</h2>
+    <p>The status has been recorded.</p>
+    <button class="btn-submit" onclick="closeAll()">Close</button>
+  </div>
+</div>
+
+
+
+<script>
+ 
+function toggleHeaderMenu(e) {
+  e.stopPropagation();
+  const m = document.getElementById("menuPopup");
+  m.style.display = (m.style.display === "flex") ? "none" : "flex";
+}
+
+function openDetails(status, desc, area, date, img) {
+  document.getElementById("pStatus").innerText = status;
+  document.getElementById("pDesc").innerText = desc;
+  document.getElementById("pArea").innerText = area;
+  document.getElementById("pDate").innerText = date;
+  document.getElementById("pImg").src = img;
+  document.getElementById("detailsPopup").style.display = "flex";
+}
+
+function openUpdateForm() {
+  closePopup('detailsPopup');
+  document.getElementById("updatePopup").style.display = "flex";
+}
+
+function showConfirm() {
+  closePopup('updatePopup');
+  document.getElementById("confirmPopup").style.display = "flex";
+}
+
+function showSuccess() {
+  closePopup('confirmPopup');
+  document.getElementById("successPopup").style.display = "flex";
+}
+
+function closePopup(id) { document.getElementById(id).style.display = "none"; }
+function closeAll() { document.querySelectorAll('.popup').forEach(p => p.style.display = "none"); }
+
+document.addEventListener("click", () => {
+  document.getElementById("menuPopup").style.display = "none";
+});
+</script>
+
+</body>
+</html>

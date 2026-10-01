@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanova</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Background with Blur */
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://img.pikbest.com/backgrounds/20190620/cartoon-simple-garbage-classification-protection-environment-background-poster_1896076.jpg!bw700') center/cover;
+    filter: blur(8px);
+    z-index: -1;
+    transform: scale(1.1);
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.logo {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.view {
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.4s ease;
+}
+
+.view.active { display: flex; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+input, select {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    outline: none;
+}
+
+.btn {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.primary { background: #2ecc71; color: white; }
+.secondary { background: #3498db; color: white; }
+.outline { background: transparent; border: 2px solid white; color: white; }
+.btn:hover { opacity: 0.8; transform: scale(1.02); }
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    align-self: flex-start;
+    font-size: 1.2rem;
+}
+
+.toggle-text {
+    color: white;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.toggle-text span {
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Modals & Popups */
+.modal, .popup {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content, .popup-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.go-btn {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.hidden { display: none; }
+a { text-decoration: none; color: inherit; }
+</style>
+<body>
+    <div class="background-overlay"></div>
+    
+    <div class="container" id="main-container">
+        <div id="home-view" class="view active">
+            <h1 class="logo">Cleanova</h1>
+            <div class="button-group">
+                <button class="btn primary" onclick="showView('citizen-signup')">Citizen</button>
+                <button class="btn secondary" onclick="showView('official-signup')">Official</button>
+                <button class="btn outline"><a href="mainall.html">Skip</a></button>
+            </div>
+        </div>
+
+        <div id="citizen-signup" class="view">
+            <button class="back-btn" onclick="showView('home-view')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2>Citizen Sign Up</h2>
+            <input type="text" placeholder="Full Name">
+            <input type="text" placeholder="Email or Phone No">
+            <input type="password" placeholder="Password">
+            <select>
+                <option value="">Select State</option>
+                <option value="karnataka">Karnataka</option>
+                <option value="delhi">Delhi</option>
+                <option value="maharashtra">Maharashtra</option>
+                </select>
+            <select>
+                <option value="">Select District</option>
+                <option value="d1">Dakshina kannada</option>
+                <option value="d2">uttarakannada</option>
+            </select>
+            <input type="text" placeholder="Taluk">
+            <input type="text" placeholder="Area">
+            <button class="btn primary" onclick="showPopup('Registration Successful!', 'citizen')">Submit</button>
+            <p class="toggle-text">Already have an account? <span onclick="showView('citizen-signin')">Sign In</span></p>
+        </div>
+
+        <div id="citizen-signin" class="view">
+            <button class="back-btn" onclick="showView('citizen-signup')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2>Citizen Sign In</h2>
+            <input type="text" placeholder="Name">
+            <input type="text" id="citizen-login-id" placeholder="Phone or Email">
+            <input type="password" placeholder="Password">
+            <div id="otp-box" class="hidden">
+                <input type="text" placeholder="Enter OTP">
+            </div>
+            <button class="btn primary" onclick="showPopup('Successfully Logged In', 'citizen')">Login</button>
+            <p class="toggle-text"><span onclick="showModal('forget-modal')">Forgot Password?</span></p>
+        </div>
+
+        <div id="official-signup" class="view">
+            <button class="back-btn" onclick="showView('home-view')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2>Official Registration</h2>
+            <input type="text" placeholder="Full Name">
+            <input type="text" placeholder="Phone No">
+            <select>
+                <option value="">Administrative Type</option>
+                <option value="municipality">Municipality</option>
+                <option value="panchayath">Panchayath</option>
+            </select>
+            <select>
+                <option value="">Designation/Role</option>
+                <option value="pdo">PDO</option>
+                <option value="member">Member</option>
+            </select>
+            <input type="text" placeholder="Address">
+            <input type="text" placeholder="ID Number">
+            <button class="btn primary" onclick="showPopup('Official Account Created!', 'official')">Submit</button>
+            <p class="toggle-text">Registered Official? <span onclick="showView('official-signin')">Sign In</span></p>
+        </div>
+
+        <div id="official-signin" class="view">
+            <button class="back-btn" onclick="showView('official-signup')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2>Official Login</h2>
+            <input type="text" placeholder="Name">
+            <input type="text" placeholder="Phone No">
+            <input type="text" placeholder="ID Number">
+            <input type="text" placeholder="OTP">
+            <button class="btn primary" onclick="showPopup('Successfully Logged In', 'official')">Submit</button>
+        </div>
+    </div>
+
+    <div id="forget-modal" class="modal">
+        <div class="modal-content">
+            <h3>Reset Password</h3>
+            <input type="password" placeholder="New Password">
+            <input type="password" placeholder="Confirm Password">
+            <button class="btn primary" onclick="closeModal('forget-modal', true)">Done</button>
+        </div>
+    </div>
+
+    <div id="success-popup" class="popup">
+        <div class="popup-content">
+            <i class="fa-solid fa-circle-check" style="color: #2ecc71; font-size: 48px;"></i>
+            <p id="popup-msg">Success!</p>
+            <button class="go-btn" id="popup-redirect-btn"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+let currentRedirect = 'citizenhome.html';
+
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+}
+
+// Handle OTP Appearance for Citizen
+document.getElementById('citizen-login-id').addEventListener('input', function(e) {
+    const val = e.target.value;
+    const otpBox = document.getElementById('otp-box');
+    if(/^\d+$/.test(val) && val.length > 5) {
+        otpBox.classList.remove('hidden');
+    } else {
+        otpBox.classList.add('hidden');
+    }
+});
+
+function showModal(id) {
+    document.getElementById(id).style.display = 'flex';
+}
+
+function closeModal(id, showSuccess = false) {
+    document.getElementById(id).style.display = 'none';
+    if(showSuccess) {
+        showPopup('Successfully Updated!', 'citizen');
+    }
+}
+
+// Updated Popup Function with redirection logic
+function showPopup(msg, userType) {
+    document.getElementById('popup-msg').innerText = msg;
+    
+    // Set the destination based on user type
+    if(userType === 'official') {
+        currentRedirect = 'officialhome.html';
+    } else {
+        currentRedirect = 'citizenhome.html';
+    }
+    
+    document.getElementById('success-popup').style.display = 'flex';
+}
+
+// Redirect on Arrow Click
+document.getElementById('popup-redirect-btn').onclick = function() {
+    window.location.href = currentRedirect;
+};
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
+    }
+}
+    </script>
+
+</body>
+</html>

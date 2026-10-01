@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Fine Management | Cleanova</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --primary-blue: #1e293b;
+            --danger-red: #ef4444;
+            --text-main: #334155;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --primary-green: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 20px; overflow-x: hidden; }
+
+        /* Background blur */
+        .bg-blur {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            filter: blur(8px) brightness(0.8); transform: scale(1.1); z-index: -1;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 10000; transition: 0.3s ease; display: flex;
+            flex-direction: column; padding: 20px 0; overflow-y: auto;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar a {
+            padding: 12px 20px; text-decoration: none; color: var(--text-main);
+            display: flex; align-items: center; gap: 12px; font-weight: 500;
+            transition: 0.2s; border-bottom: 1px solid #f1f5f9;
+        }
+        .sidebar a:hover { background: #f1f5f9; color: var(--primary-green); }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 9000;
+        }
+        .overlay.active { display: block; }
+
+        /* Header */
+        .main-header {
+            background: var(--primary-blue); color: white; padding: 1rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-center { position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.5rem; font-weight: 800; }
+        .icon-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+        /* Main Content */
+        .container { max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+        .page-title { text-align: center; font-size: 1.8rem; margin-bottom: 2rem; color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.5); }
+        .fine-card {
+            background: var(--card-bg); padding: 1.5rem; border-radius: 12px;
+            box-shadow: var(--shadow); border-left: 5px solid var(--danger-red); margin-bottom: 1rem;
+        }
+        .fine-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .issue-name { font-weight: 700; }
+        .fine-amount { color: var(--danger-red); font-weight: 800; }
+
+        /* ===== FIXED FLOATING MENU ===== */
+        .fab-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fab {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .fab:active { transform: scale(0.9); }
+
+        .fab-menu {
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .fab-menu.show { display: flex; animation: slideUp 0.3s ease; }
+
+        .fab-menu a {
+            width: 45px; height: 45px; background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #10b981; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur"></div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Cases</a>
+    <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Cases</a>
+    <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+    <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+    <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+    <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+    <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+    <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+    <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </nav>
+
+    <header class="main-header">
+        <button class="icon-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
+        <div class="header-center">Cleanova</div>
+        <button class="icon-btn"><i class="ph ph-user"></i></button>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Your Fines</h1>
+        <div id="fine-list" class="fine-list"></div>
+    </main>
+
+    <div class="fab-container">
+        <div class="fab-menu" id="fabMenu">
+            <a href="tel:9876543210" title="Call Us"><i class="fa-solid fa-phone"></i></a>
+            <a href="sms:9876543210" title="Text Us"><i class="fa-solid fa-message"></i></a>
+        </div>
+        <div class="fab" onclick="toggleFabMenu()">
+            <i class="fa-solid fa-plus" id="fabIcon"></i>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Toggle FAB Menu
+        function toggleFabMenu() {
+            const menu = document.getElementById("fabMenu");
+            const icon = document.getElementById("fabIcon");
+            menu.classList.toggle("show");
+            
+            // Rotate icon when open
+            if(menu.classList.contains("show")) {
+                icon.style.transform = "rotate(45deg)";
+            } else {
+                icon.style.transform = "rotate(0deg)";
+            }
+        }
+
+        // Data and Rendering
+        const finesData = [
+            { issue: "Littering in Public Park", date: "Oct 12, 2023", amount: "$50.00", note: "Citizen reported waste left near the central fountain area." },
+            { issue: "Improper Recyclable Sorting", date: "Oct 15, 2023", amount: "$75.00", note: "Sanitation Department audit found plastic in organic bin." },
+            { issue: "Hazardous Waste Disposal", date: "Oct 20, 2023", amount: "$300.00", note: "Chemical waste detected in standard residential pickup." },
+            { issue: "Illegal Street Dumping", date: "Oct 25, 2023", amount: "$500.00", note: "CCTV footage captured unauthorized large item disposal." }
+        ];
+
+        function renderFines() {
+            const listContainer = document.getElementById('fine-list');
+            listContainer.innerHTML = finesData.map(fine => `
+                <div class="fine-card">
+                    <div class="fine-header">
+                        <span class="issue-name">${fine.issue}</span>
+                        <span class="fine-amount">${fine.amount}</span>
+                    </div>
+                    <div class="report-date" style="font-size: 0.85rem; color: #64748b; margin: 5px 0 10px 0;">Reported: ${fine.date}</div>
+                    <p class="description" style="font-size: 0.95rem;">${fine.note}</p>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFines();
+            lucide.createIcons();
+        });
+
+        // Close FAB menu if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.closest('.fab-container')) {
+                document.getElementById("fabMenu").classList.remove("show");
+                document.getElementById("fabIcon").style.transform = "rotate(0deg)";
+            }
+        }
+    </script>
+</body>
+</html>

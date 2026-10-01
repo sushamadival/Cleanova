@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean City | FAQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --green: #00d09c;
+            --blue: #00a3ff;
+            --bg: #f0fdf9;
+            --dark: #102a2c;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            color: #333;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            padding: 20px;
+            color: white;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-trigger {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 2100;
+            transition: 0.3s;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ===== HAMBURGER POPUP MENU ===== */
+        .menu-overlay {
+            position: absolute;
+            top: 65px;
+            left: 15px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            width: 220px;
+            overflow: hidden;
+            z-index: 2000;
+        }
+
+        .menu-overlay.active {
+            display: flex;
+        }
+
+        .menu-content a {
+            display: block;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            border-bottom: 1px solid #eee;
+            transition: 0.3s;
+            text-align: left;
+        }
+
+        .menu-content a:hover {
+            background: var(--green);
+            color: white;
+        }
+
+        .menu-content i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ===== FAQ SECTION ===== */
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .faq-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border-left: 5px solid var(--green);
+        }
+
+        .faq-question {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.3s ease-out;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .faq-card.open .faq-answer {
+            padding-bottom: 20px;
+            max-height: 200px;
+        }
+
+        .faq-card.open i {
+            transform: rotate(180deg);
+            color: var(--green);
+        }
+
+        /* ===== ASK BOX ===== */
+        .ask-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,163,255,0.1);
+            border: 2px dashed var(--blue);
+        }
+
+        .ask-section h3 { margin-top: 0; color: var(--blue); }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+        }
+
+        .btn-send {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-send:hover { opacity: 0.9; }
+
+        .success-pop {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: none;
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+        
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-trigger" onclick="toggleNav()" id="menuBtn">
+        ☰
+    </div>
+    <h1>Cleanova</h1>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+    <div class="menu-content">
+         <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="text-align: center; color: var(--dark);">Frequently Asked Questions</h2>
+    
+    <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-question">
+            <span>How do I report a new garbage pile?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Go to the Home page and click the "+" button. Upload a photo, pin the location, and our team will be notified immediately.
+        </div>
+    </div>
+
+    <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-question">
+            <span>What rewards do I get for reporting?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            For every verified report, you earn "Green Points". Once you reach 500 points, you can redeem them for local store vouchers or tax rebates!
+        </div>
+    </div>
+
+    <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-question">
+            <span>How long does it take to clean a reported spot?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Most reports are addressed within 24-48 hours. You can track the live status in the "In Progress" section.
+        </div>
+    </div>
+
+    <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-question">
+            <span>Can I report a person for littering?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+            Yes. Use the "Reported" section. If you have video or photo evidence of the violator, they may be fined based on city laws.
+        </div>
+    </div>
+
+    <div class="ask-section">
+        <h3>Didn't find your answer?</h3>
+        <p style="font-size: 14px; color: #777;">Type your question below and our community or admin will answer it.</p>
+        <textarea id="userQuestion" placeholder="Ask something about Clean City..."></textarea>
+        <button class="btn-send" onclick="submitQuestion()">
+            Send Question <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<div class="success-pop" id="successPop">
+    Question submitted successfully!
+</div>
+
+
+<script>
+    // Toggle Hamburger Navigation
+    function toggleNav() {
+        const overlay = document.getElementById('menuOverlay');
+        const btn = document.getElementById('menuBtn');
+        
+        if (overlay.classList.contains('active')) {
+            overlay.classList.remove('active');
+            btn.innerHTML = "☰";
+        } else {
+            overlay.classList.add('active');
+            btn.innerHTML = "×";
+        }
+    }
+
+    // Close menu when clicking outside
+    window.onclick = function(event) {
+        const overlay = document.getElementById('menuOverlay');
+        const btn = document.getElementById('menuBtn');
+        if (!event.target.matches('.nav-trigger') && overlay.classList.contains('active')) {
+            overlay.classList.remove('active');
+            btn.innerHTML = "☰";
+        }
+    }
+
+   
+
+    // Toggle FAQ Accordion
+    function toggleFaq(card) {
+        document.querySelectorAll('.faq-card').forEach(c => {
+            if (c !== card) c.classList.remove('open');
+        });
+        card.classList.toggle('open');
+    }
+
+    // Submit Question Logic
+    function submitQuestion() {
+        const q = document.getElementById('userQuestion');
+        if (q.value.trim() === "") {
+            alert("Please type a question first!");
+            return;
+        }
+
+        const pop = document.getElementById('successPop');
+        pop.style.display = 'block';
+        q.value = "";
+
+        setTimeout(() => {
+            pop.style.display = 'none';
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>

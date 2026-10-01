@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Cleanova</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --green: #00d09c;
+            --blue: #00a3ff;
+            --dark: #102a2c;
+            --bg: #eefbf7;
+            --navy: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            color: #333;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://img.freepik.com/premium-photo/abstract-7-light-background-wallpaper-colorful-gradient-blurry-soft-smooth-motion-bright-shine_792836-22805.jpg?semt=ais_hybrid&w=740&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 14px 18px;
+            background: linear-gradient(90deg, #00d09c, #007cf0);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hamburger { font-size: 26px; cursor: pointer; }
+        header h1 { text-align: center; margin: 0; font-size: 22px; }
+
+        .login-btn {
+            background: white;
+            color: var(--green);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* ===== SLIDE SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px; /* Hidden by default */
+            width: 280px;
+            height: 100vh;
+            background: white;
+            z-index: 5000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px 0;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .sidebar.active {
+            left: 0;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+        }
+
+        .sidebar a {
+            padding: 14px 25px;
+            text-decoration: none;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 500;
+            transition: 0.2s;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        .sidebar a i {
+            width: 20px;
+            color: var(--green);
+            text-align: center;
+        }
+
+        .sidebar a:hover {
+            background: #f1f5f9;
+            color: var(--green);
+            padding-left: 30px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            z-index: 4500;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .policy-wrapper {
+            display: flex;
+            justify-content: center;
+            padding-bottom: 50px;
+        }
+        .policy-container {
+            background: rgba(255, 255, 255, 0.95);
+            max-width: 800px;
+            margin: 30px 20px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .main-heading {
+            font-size: 2rem;
+            color: #2c3e50;
+            text-align: center;
+            text-transform: uppercase;
+            border-bottom: 4px solid #27ae60;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .sub-heading { font-size: 1.6rem; color: #27ae60; margin-top: 30px; font-style: italic; }
+        .section-title {
+            font-size: 1.1rem; font-weight: bold; color: #34495e; background: #ecf0f1;
+            padding: 5px 15px; border-left: 5px solid #2c3e50; margin-top: 20px;
+        }
+        p { line-height: 1.6; margin-bottom: 15px; }
+
+        /* ===== FAB ===== */
+        .fab {
+            position: fixed; right: 18px; bottom: 22px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#00d09c,#00a3ff); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 1000;
+        }
+        .fab-menu {
+            position: fixed; right: 24px; bottom: 90px; display: none; flex-direction: column; gap: 14px; z-index: 1000;
+        }
+        .fab-menu a {
+            width: 48px; height: 48px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00d09c; font-size: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.25); text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .policy-container { padding: 20px; }
+            .main-heading { font-size: 1.6rem; }
+            header h1 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+     <a href="mainall.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="mainall.html"><i class="fa-solid fa-list-ul"></i> All</a>
+    <a href="mainachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="citizenfaq.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="mainsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="maininstruction.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions & Info</a>
+    <a href="mainreport.html#"><i class="fa-solid fa-thumbtack"></i> Report</a>
+    <a href="mainprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+    <a href="mainabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+</nav>
+
+<header>
+  <div class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+  <h1>Cleanova</h1>
+  <a href="login.html" class="login-btn">Login</a>
+</header>
+
+<div class="policy-wrapper">
+    <div class="policy-container">
+        <h1 class="main-heading">Privacy and Policy</h1>
+
+        <p>Welcome to <strong>Cleanova</strong>. Your privacy is critically important to us. This document outlines how we handle your data and our service rules.</p>
+
+        <div class="section-title">1. Information Collection</div>
+        <p>We collect information to provide better services to all our users. This includes basic details like your name and email address when you sign up for Cleanova services.</p>
+
+        <div class="section-title">2. Use of Data</div>
+        <p>The data we collect is used to maintain, protect, and improve our cleaning services and to develop new ones.</p>
+
+        <h2 class="sub-heading">Terms and Conditions</h2>
+
+        <div class="section-title">3. User Responsibilities</div>
+        <p>By using Cleanova, you agree to provide accurate information and follow our community guidelines regarding service booking and payments.</p>
+
+        <div class="section-title">4. Limitation of Liability</div>
+        <p>Cleanova shall not be held liable for any indirect, incidental, or consequential damages resulting from the use of our website or services.</p>
+
+        <div class="section-title">5. Contact Us</div>
+        <p>If you have any questions about these Privacy Policies or Terms, please contact us at <strong>support@cleanova.com</strong>.</p>
+        
+        <p style="text-align: center; margin-top: 40px; font-size: 0.9rem; color: #7f8c8d;">
+            Last Updated: January 2026
+        </p>
+    </div>
+</div>
+
+<div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+
+<script>
+    /* Sidebar Toggle Logic */
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+        sidebar.classList.toggle("active");
+        overlay.classList.toggle("active");
+    }
+
+    /* FAB Menu Logic */
+    function toggleFabMenu(event) {
+        event.stopPropagation();
+        const fab = document.getElementById("fabMenu");
+        fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+    }
+
+    /* Global Click to Close FAB Menu */
+    document.addEventListener("click", function() {
+        document.getElementById("fabMenu").style.display = "none";
+    });
+</script>
+
+</body>
+</html>

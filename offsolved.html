@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Solved Issues</title>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<style>
+:root{
+  --green:#00d09c;
+  --blue:#00a3ff;
+  --dark:#102a2c;
+  --bg:#eefbf7;
+}
+
+/* ===== BODY ===== */
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f6f8;
+}
+
+/* ===== HEADER ===== */
+header{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding:14px 18px;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:10000;
+}
+
+.hamburger{
+  font-size:28px;
+  cursor:pointer;
+  width: 40px;
+}
+
+header h1{
+  flex:1;
+  text-align:center;
+  margin:0;
+  font-size:22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Profile Image Style */
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* ===== MENU POPUP ===== */
+.menu{
+  position:absolute;
+  top:65px;
+  left:15px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.2);
+  display:none;
+  overflow:hidden;
+  width: 220px;
+  flex-direction: column;
+  z-index: 10001;
+}
+
+.menu a{
+  display:block;
+  padding:14px 20px;
+  text-decoration:none;
+  color:#333;
+  border-bottom:1px solid #eee;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.menu a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.menu a:hover{
+  background:var(--green);
+  color:#fff;
+}
+
+/* Section Title below header */
+.page-title {
+    text-align: center;
+    padding: 15px 0 5px 0;
+    color: var(--dark);
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:15px;
+  padding:10px 20px 20px 20px;
+}
+
+.stat{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+  text-align:center;
+}
+
+.stat i{
+  font-size:26px;
+  color:var(--green);
+}
+
+.stat h2{
+  margin:8px 0 0;
+  font-size: 20px;
+}
+
+/* FILTERS */
+.filters{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:15px;
+}
+
+.filter{
+  padding:8px 16px;
+  border-radius:20px;
+  background:white;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: #333;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.filter.active-solved {
+  background: var(--green);
+  color: white;
+}
+
+/* SEARCH */
+.search{
+  display:flex;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+.search input{
+  width:85%;
+  max-width:400px;
+  padding:12px 16px;
+  border-radius:12px;
+  border:none;
+  outline:none;
+  box-shadow:0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* ===== GRID ===== */
+.container{
+  padding:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+
+/* ===== ISSUE CARD ===== */
+.issue-card{
+  position:relative;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(0,0,0,0.12);
+}
+
+.issue-card img, .issue-card video{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.issue-card h4{
+  margin:0;
+  padding:15px;
+  color: var(--dark);
+}
+
+.issue-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:16px;
+  font-weight: bold;
+  opacity:0;
+  transition:0.3s;
+  cursor:pointer;
+  z-index: 2;
+}
+.issue-card:hover .issue-overlay{
+  opacity:1;
+}
+
+/* ===== POPUP ===== */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:20000;
+  padding: 20px;
+}
+
+.popup-content{
+  background:#fff;
+  width:100%;
+  max-width:420px;
+  border-radius:18px;
+  padding:25px;
+  position: relative; 
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#pmedia-container img, #pmedia-container video {
+  width:100%;
+  border-radius:12px;
+  margin-bottom: 15px;
+}
+
+.close{
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 30px;
+  cursor: pointer;
+  color: #333;
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hamburger" onclick="toggleMenu()" id="ham">☰</div>
+  <h1>Cleanova</h1>
+  <div class="profile-img">
+    <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=00d09c" alt="Profile" style="width:100%; height:100%;">
+  </div>
+
+  <div class="menu" id="menu">
+     <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+  </div>
+</header>
+
+
+
+<div class="stats">
+  <div class="stat"><i class="fa-solid fa-check"></i><h2>128 Solved</h2></div>
+  <div class="stat"><i class="fa-solid fa-spinner" style="color:#00a3ff"></i><h2>14 In Progress</h2></div>
+  <div class="stat"><i class="fa-solid fa-users" style="color:#ff9800"></i><h2>200 Reports</h2></div>
+</div>
+
+<div class="filters">
+  <a href="#" class="filter active-solved">Solved</a>
+  <a href="offinprogress.html" class="filter">In Progress</a>
+  <a href="offreported.html" class="filter">Reported</a>
+</div>
+
+<div class="search">
+  <input type="text" placeholder="Search by area or issue...">
+</div>
+
+<div class="container" id="issueGrid"></div>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <div class="close" onclick="closePopup()">×</div>
+    <div id="pmedia-container"></div>
+    <h3 id="ptitle" style="margin-top:0; color: var(--dark);"></h3>
+    <p><b>Location:</b> <span id="ploc"></span></p>
+    <p><b>Reported:</b> <span id="prep"></span></p>
+    <p><b>Solved:</b> <span id="psol"></span></p>
+    <p><b>Fine Amount:</b> <span id="pfine" style="color: #ff5252; font-weight: bold;"></span></p>
+    <p><b>Reward Amount:</b> <span id="preward" style="color: var(--green); font-weight: bold;"></span></p>
+  </div>
+</div>
+
+<script>
+const issues = [
+  ["Trashbin Waste Cleared","MG Road","10 March 2025","12 March 2025","https://nypost.com/wp-content/uploads/sites/2/2021/02/garbage.jpg?quality=75&strip=all&w=744", "₹0", "₹200 "],
+  ["Bus Stop Garbage Cleared","APMC Road","01 April 2025","08 April 2025","https://www.shutterstock.com/shutterstock/photos/1491431528/display_1500/stock-photo-jaipur-india-august-bus-stop-shed-in-jaipur-dustbins-are-placed-everywhere-under-the-1491431528.jpg", "₹700", "₹200"],
+  ["Footpath cleared","Puttur","17 August 2025","21 August 2025","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLO4a1bGyV23wxT_SLsM0qydvTFuo6Qrdf-w&s", "₹200", "₹300"],
+  ["The violator","Nagara","25 March 2025","29 March 2025","dumb1.mp4", "₹5000", "₹2000"],
+  ["Public Nuisance","Puttur Town","13 December 2025","18 December 2025","dumb4.mp4", "₹10000", "₹2000"],
+  ["water trash cleared","Bypass","15 June 2025","20 June 2025","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy1-Tlg1EyVM_L18N_zlQ8wKwaEF6K5O-v7Q&s", "₹2900", "₹400"],
+  ["Littering (CCTV)","Nagara Zone","08 October 2025","11 October 2025","dumb3.mp4", "₹31000", "₹3000"],
+  ["Roadside trash cleared","Bolwar","17 May 2025","22 May 2025","https://media.istockphoto.com/id/1288137858/photo/a-woman-sweeping-the-streets.jpg?s=612x612&w=0&k=20&c=zhQNOo55VxNyra8o_YMyUVb8goLZz0-SIUYEuqo1B-c=", "₹890", "₹200"],
+  ["Water trash cleaned up ","Kaveri Lake","10 May 2025","14 May 2025","https://stewardsofgacoast.org/wp-content/uploads/2017/11/sunshine-meets-river.jpg", "₹500", "₹400"],
+  ["Caught in Act (CCTV)","Bypass Zone","09 September 2025","12 September 2025","dumb4.mp4", "₹19750", "₹2000"],
+  ["Trashbin Waste Cleared","Nagara","20 March 2025","29 March 2025","https://www.shutterstock.com/image-photo/blue-recycle-bin-road-side-260nw-2084517289.jpg", "₹0", "₹200"]
+];
+
+const grid = document.getElementById("issueGrid");
+grid.innerHTML = issues.map((i, idx) => {
+    const isVideo = i[4].toLowerCase().endsWith('.mp4');
+    const mediaHtml = isVideo ? `<video src="${i[4]}" muted></video>` : `<img src="${i[4]}">`;
+    
+    return `
+    <div class="issue-card">
+      ${mediaHtml}
+      <div class="issue-overlay" onclick="openPopup('${i[0]}','${i[1]}','${i[2]}','${i[3]}','${i[4]}','${i[5]}','${i[6]}')">View Details</div>
+      <h4>${i[0]}</h4>
+    </div>
+    `;
+}).join("");
+
+function toggleMenu(){
+  const m=document.getElementById("menu");
+  const h=document.getElementById("ham");
+  if(m.style.display==="flex"){
+    m.style.display="none";
+    h.innerHTML="☰";
+  }else{
+    m.style.display="flex";
+    h.innerHTML="×";
+  }
+}
+
+function openPopup(t,l,r,s,media,fine,reward){
+  document.getElementById("ptitle").innerText=t;
+  document.getElementById("ploc").innerText=l;
+  document.getElementById("prep").innerText=r;
+  document.getElementById("psol").innerText=s;
+  document.getElementById("pfine").innerText=fine;
+  document.getElementById("preward").innerText=reward;
+  
+  const container = document.getElementById("pmedia-container");
+  if(media.toLowerCase().endsWith('.mp4')){
+      container.innerHTML = `<video src="${media}" controls autoplay style="width:100%; border-radius:12px;"></video>`;
+  } else {
+      container.innerHTML = `<img src="${media}">`;
+  }
+  
+  document.getElementById("popup").style.display="flex";
+}
+
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+  document.getElementById("pmedia-container").innerHTML = ""; 
+}
+
+// Close menu/popup when clicking outside
+window.onclick = function(event) {
+    const menu = document.getElementById("menu");
+    const ham = document.getElementById("ham");
+    if (!ham.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = "none";
+        ham.innerHTML = "☰";
+    }
+    if (event.target == document.getElementById("popup")) closePopup();
+}
+</script>
+
+</body>
+</html>

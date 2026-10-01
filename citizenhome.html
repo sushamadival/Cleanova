@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanova | Citizen Tracking & Reporting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #27ae60;
+            --ocean: #2980b9;
+            --dark: #1a252f;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://img.freepik.com/free-photo/beauty-defocus-focus-flora-white_1253-446.jpg?semt=ais_hybrid&w=740&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            color: #333; 
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 25px; background: white; border-bottom: 2px solid #eee;
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .nav-right { display: flex; align-items: center; gap: 15px; position: relative; }
+        .btn { padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-signup { background: var(--primary); color: white; }
+        .profile-img { width: 40px; height: 40px; cursor: pointer; border-radius: 50%; border: 2px solid var(--primary); }
+
+        #profile-dropdown {
+            position: absolute; top: 55px; right: 0; width: 180px;
+            background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none; flex-direction: column; overflow: hidden; z-index: 1100; border: 1px solid #eee;
+        }
+
+        #profile-dropdown a { padding: 12px 15px; text-decoration: none; color: #333; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
+        #profile-dropdown a:hover { background: #f0f0f0; color: var(--primary); }
+
+        /* --- Sidebar --- */
+        #side-menu {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: white; color: rgb(17, 14, 14); transition: 0.4s; z-index: 1001; padding-top: 60px;
+            overflow-y: auto;
+        }
+        #side-menu.active { left: 0; }
+        #side-menu a { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 15px 25px; 
+            color: #020202; 
+            text-decoration: none; 
+            border-bottom: 1px solid #dedfe0; 
+            transition: 0.3s;
+        }
+        #side-menu a:hover { background:  #2ecc71;; color: white; }
+        #side-menu a i { width: 20px; text-align: center; }
+
+        /* --- Layout --- */
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .map-card, .action-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .map-viewport { 
+            width: 100%; height: 400px; background: #c5e1a5; border-radius: 10px; 
+            position: relative; overflow: hidden; border: 2px solid #ddd;
+        }
+        .location-tag {
+            position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9);
+            padding: 10px 15px; border-radius: 10px; font-size: 12px;
+            color: var(--dark); border: 1px solid var(--primary); z-index: 10;
+        }
+        .day-locations { margin-top: 5px; font-size: 10px; color: #666; }
+
+        .truck-icon {
+            position: absolute; font-size: 24px; transition: all 4s linear;
+            top: 50%; left: -5%; transform: scaleX(-1);
+            filter: drop-shadow(-2px 2px 2px rgba(0,0,0,0.3));
+        }
+
+        .camera-box {
+            width: 100%; height: 200px; border: 2px dashed var(--primary);
+            border-radius: 10px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer; 
+            margin-bottom: 20px; background: #f0fff4; overflow: hidden; position: relative;
+        }
+        .camera-box img, .camera-box video { width: 100%; height: 100%; object-fit: cover; }
+
+        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        
+        #auto-popup {
+            position: fixed; bottom: 20px; left: 20px; width: 300px;
+            background: white; border-radius: 10px; padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2); border-left: 5px solid var(--primary);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        @media (max-width: 850px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        /* ===== FLOATING MENU ===== */
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:9999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:9999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-size: 24px; cursor: pointer;" onclick="toggleMenu()">☰</div>
+    <div style="font-weight: bold; color: var(--primary); font-size: 20px;">Cleanova</div>
+    <div class="nav-right">
+        <img src="https://www.w3schools.com/howto/img_avatar2.png" class="profile-img" onclick="toggleProfileDropdown()">
+        <div id="profile-dropdown">
+            <a href="citizendiscount.html">💰 Your Discount</a>
+            <a href="#" onclick="alert('Logging out...')">🚪 Logout</a>
+        </div>
+    </div>
+</header>
+
+<div id="side-menu">
+    <div style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:25px;" onclick="toggleMenu()">×</div>
+    <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Issues</a>
+    <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Issues</a>
+    <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress Issues</a>
+    <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+    <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+    <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+    <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+    <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+    <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+    <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+</div>
+<div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+
+<div class="container">
+    <div class="map-card">
+        <h3>🚚 Live Collection Tracker</h3>
+        <p>Vehicle <b>PK-09</b> is heading to your sector. Get your plastic ready!</p>
+        <div class="map-viewport" id="map">
+            <div class="location-tag">
+                📍 Currently at: Green Valley Sector 4
+                <div class="day-locations">
+                    <div>🗓 Monday: Green Valley Sector 4</div>
+                    <div>🗓 Tuesday: Lake View Area</div>
+                    <div>🗓 Wednesday: Market Road</div>
+                    <div>🗓 Thursday: Bus Stand Zone</div>
+                    <div>🗓 Friday: School Area</div>
+                </div>
+            </div>
+            
+            <div id="truck" class="truck-icon">🚛</div>
+            <div style="position:absolute; width:100%; height:2px; background:white; top:55%;"></div>
+        </div>
+    </div>
+
+    <div class="action-card">
+        <h3>📸 Report an Offender</h3>
+        <div class="camera-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div id="preview-content" style="text-align: center;">
+                <span style="font-size: 30px;">📷</span>
+                <p>Click to Upload Photo or Video</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*,video/*" style="display:none" onchange="previewFile()">
+        </div>
+
+        <h3>📝 Citizen Survey</h3>
+        <form id="plasticForm">
+            <label>Plastic Type Collected:</label>
+            <select id="plasticType">
+                <option>Bottles (PET)</option>
+                <option>Bags/Wrappers</option>
+                <option>Hard Plastic</option>
+            </select>
+            <label>Estimated Weight (kg):</label>
+            <input type="number" id="weight" placeholder="0.0">
+            <button type="button" class="btn btn-signup" style="width: 100%; margin-top: 10px;" onclick="submitReport()">Submit Report</button>
+        </form>
+    </div>
+</div>
+
+<div id="auto-popup">
+    <div id="popup-text" style="font-size: 13px;"><b>Urgent:</b> Collection vehicle is 2 mins away!</div>
+    <div style="cursor:pointer; color:var(--primary); font-weight:bold;" onclick="nextSlide()">❯</div>
+</div>
+
+<script>
+    function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); }
+
+    function toggleProfileDropdown() {
+        const dropdown = document.getElementById('profile-dropdown');
+        dropdown.style.display = (dropdown.style.display === "flex") ? "none" : "flex";
+    }
+
+    /* --- FILE PREVIEW LOGIC --- */
+    function previewFile() {
+        const preview = document.getElementById('preview-content');
+        const file = document.getElementById('fileInput').files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            preview.innerHTML = ''; 
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                preview.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.src = reader.result;
+                video.autoplay = true;
+                video.loop = true;
+                video.muted = true;
+                preview.appendChild(video);
+            }
+        }
+
+        if (file) { reader.readAsDataURL(file); }
+    }
+
+    /* --- SUBMIT REPORT LOGIC --- */
+    function submitReport() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length === 0) {
+            alert("Please select a photo or video first!");
+            return;
+        }
+        alert("Thank you! Report submitted with " + fileInput.files[0].name);
+        document.getElementById('preview-content').innerHTML = '<span style="font-size: 30px;">📷</span><p>Click to Upload Photo or Video</p>';
+        document.getElementById('plasticForm').reset();
+    }
+
+    /* --- TRUCK LOGIC --- */
+    const truck = document.getElementById('truck');
+    let pos = -5; 
+    setInterval(() => {
+        pos = pos + 10; 
+        if (pos > 100) {
+            truck.style.transition = "none";
+            pos = -5; 
+            truck.style.left = pos + "%";
+            setTimeout(() => { truck.style.transition = "all 4s linear"; }, 50);
+        } else {
+            truck.style.left = pos + "%";
+        }
+    }, 4000);
+
+    const updates = ["🚛 2 mins away!", "⚠️ Check fines.", "✅ 12 reports solved."];
+    let idx = 0;
+    function nextSlide() {
+        idx = (idx + 1) % updates.length;
+        document.getElementById('popup-text').innerHTML = updates[idx];
+    }
+    setInterval(nextSlide, 5000);
+
+    // Close dropdowns if clicked outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.profile-img')) {
+            const dropdown = document.getElementById('profile-dropdown');
+            if (dropdown.style.display === "flex") {
+                dropdown.style.display = "none";
+            }
+        }
+    }
+    function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+</script>
+
+</body>
+</html>

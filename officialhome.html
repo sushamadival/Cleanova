@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Admin - Enforcement Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://media.istockphoto.com/id/1139651150/photo/lonely-tree-growing-on-the-garbage-dump.jpg?s=612x612&w=0&k=20&c=jnISu8xkSSUPhaWmVIuGHHsq4tMNlp0n9xcwVJAXQsU=');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* ===== HEADER & MENU STYLE ===== */
+        header {
+            background: #fff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hamburger { font-size: 24px; cursor: pointer; color: #475569; }
+
+        /* SIDE MENU POPUP */
+        .menu-popup {
+            display: none; 
+            position: absolute; 
+            top: 65px; 
+            left: 10px;
+            background: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 15px; 
+            width: 260px; 
+            flex-direction: column; 
+            z-index: 9999; 
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+        }
+
+        .menu-popup a {
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 14px 20px;
+            text-decoration: none; 
+            color: #334155; 
+            font-size: 15px; 
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .menu-popup a i { width: 20px; color: #6366f1; }
+        .menu-popup a:hover { background: #f8fafc; color: #4f46e5; padding-left: 25px; }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Popups */
+        .popup, .action-popup {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .popup-content {
+            background: #fff;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 30px;
+            text-align: center;
+        }
+
+        .popup-info { text-align: left; background: #f8fafc; padding: 15px; border-radius: 15px; margin: 20px 0; }
+        .popup-info p { margin: 10px 0; font-size: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; color: #475569; }
+
+        .btn-action {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            font-weight: bold; cursor: pointer; color: #fff;
+            transition: 0.2s;
+        }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-close { margin-top: 10px; background: none; color: #64748b; border: none; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="flex items-center gap-4">
+            <div class="hamburger" onclick="toggleHeaderMenu(event)">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="menu-popup" id="menuPopup">
+    <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+  </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-1.5 rounded-lg text-white">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 tracking-tight">Cleanova <span class="text-indigo-600">Admin</span></h2>
+            </div>
+        </div>
+
+        <div class="relative group">
+            <div class="flex items-center gap-3 cursor-pointer p-1 pr-3 rounded-full hover:bg-slate-100 transition">
+                <img src="https://ui-avatars.com/api/?name=Officer+Incharge&background=4f46e5&color=fff" class="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="Profile">
+                <div class="hidden sm:block text-left">
+                    <p class="text-xs font-bold leading-none">Officer Incharge</p>
+                    <p class="text-[10px] text-slate-400">Main District</p>
+                </div>
+                <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+            </div>
+            <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-2xl hidden group-hover:block overflow-hidden transition-all">
+                <div class="px-4 py-3 border-b bg-slate-50 text-[11px] font-bold text-slate-400 uppercase">Account</div>
+                <a href="javascript:void(0)" onclick="openLogoutPopup()" class="block px-4 py-3 text-sm text-red-500 hover:bg-red-50 font-bold">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-8 pb-12 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Fine Cases</p>
+                    <p class="text-2xl font-black mt-1">124</p>
+                </div>
+                <div class="bg-red-500 p-5 rounded-2xl shadow-lg text-white">
+                    <p class="text-red-100 text-xs font-bold uppercase tracking-wider">Expired (Action Req)</p>
+                    <p class="text-2xl font-black mt-1">18</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-emerald-500 text-xs font-bold uppercase tracking-wider">Payments Received</p>
+                    <p class="text-2xl font-black mt-1">84</p>
+                </div>
+                <div class="bg-indigo-600 p-5 rounded-2xl shadow-lg text-white">
+                    <p class="text-indigo-200 text-xs font-bold uppercase tracking-wider">Collection Rate</p>
+                    <p class="text-2xl font-black mt-1">67.7%</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/50">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800">Compliance Overview</h2>
+                        <p class="text-sm text-slate-500">Click any row to view details and take enforcement action</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto max-h-[600px] custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-white z-10 border-b">
+                            <tr class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Violator Name</th>
+                                <th class="px-6 py-4">Reason</th>
+                                <th class="px-6 py-4">Fine Amount</th>
+                                <th class="px-6 py-4">Deadline</th>
+                                <th class="px-6 py-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complianceTable" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="popup" id="detailsPopup">
+        <div class="popup-content">
+            <h2 class="text-xl font-extrabold text-indigo-600">Violation Details</h2>
+            <div class="popup-info">
+                <p><b><i class="fa-solid fa-user mr-2"></i> Name:</b> <span id="pName" class="font-bold"></span></p>
+                <p><b><i class="fa-solid fa-phone mr-2"></i> Contact:</b> <span id="pPhone"></span></p>
+                <p><b><i class="fa-solid fa-indian-rupee-sign mr-2"></i> Fine Due:</b> ₹<span id="pFine" class="text-red-600 font-bold"></span></p>
+                <p><b><i class="fa-solid fa-clock mr-2"></i> Deadline:</b> <span id="pTime" class="font-bold"></span></p>
+            </div>
+            <button class="btn-action bg-indigo-600 mb-2" onclick="openAction()">Take Immediate Action</button>
+            <button class="btn-close" onclick="closePopup()">Dismiss</button>
+        </div>
+    </div>
+
+    <div class="action-popup" id="actionPopup">
+        <div class="popup-content">
+            <h2 class="text-xl font-extrabold text-red-600 mb-6">Enforcement Menu</h2>
+            <div class="space-y-3">
+                <button class="btn-action bg-amber-500" onclick="performAction('Late Fee Added')">
+                    <i class="fas fa-plus-circle mr-2"></i>Add Late Fee (₹200)
+                </button>
+                <button class="btn-action bg-emerald-600" onclick="performAction('Field Visit Scheduled')">
+                    <i class="fas fa-running mr-2"></i>Schedule Field Visit
+                </button>
+                <button class="btn-action bg-red-600" onclick="performAction('Final Warning Dispatched')">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Send Final Legal Warning
+                </button>
+            </div>
+            <button class="btn-close mt-6" onclick="closeAction()">Back to Profile</button>
+        </div>
+    </div>
+
+    <div class="popup" id="logoutPopup">
+        <div class="popup-content">
+            <h2 class="text-xl font-extrabold text-red-600 mb-4">
+                <i class="fas fa-sign-out-alt mr-2"></i>Confirm Logout
+            </h2>
+            <p class="text-slate-600 text-sm mb-6">Are you sure you want to logout?</p>
+            <div class="flex gap-3">
+                <button class="btn-action bg-red-600" onclick="confirmLogout()">Yes, Logout</button>
+                <button class="btn-action bg-slate-200 text-slate-700" onclick="closeLogoutPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const people = [
+            { name: "Rahul Sharma", phone: "9876543210", reason: "Plastic Throwing", fine: 1200, expiry: "EXPIRED", status: "Critical" },
+            { name: "Anita Verma", phone: "9123456780", reason: "Burning Polybags", fine: 850, expiry: "2 Days Left", status: "Warning" },
+            { name: "Kevin Peters", phone: "9988776655", reason: "Unsegregated Waste", fine: 500, expiry: "4 Days Left", status: "Pending" },
+            { name: "Suresh Naik", phone: "9876501234", reason: "Commercial Plastic Use", fine: 5000, expiry: "EXPIRED", status: "Critical" },
+            { name: "Sophia Lee", phone: "9000111222", reason: "Clog Drain w/ Plastic", fine: 1500, expiry: "3 Days Left", status: "Warning" },
+            { name: "Vicky Malhotra", phone: "9898989898", reason: "Illegal Dumping", fine: 2000, expiry: "PAID", status: "Success" }
+        ];
+
+        // Menu Toggle
+        function toggleHeaderMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('menuPopup');
+            menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
+
+        // Table Rendering
+        const tableBody = document.getElementById('complianceTable');
+        people.forEach((person, index) => {
+            let statusBadge = "";
+            let rowClass = person.status === "Critical" ? "bg-red-50/30" : "";
+
+            if(person.status === "Critical") statusBadge = `<span class="bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Critical</span>`;
+            else if(person.status === "Warning") statusBadge = `<span class="bg-orange-400 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Warning</span>`;
+            else if(person.status === "Success") statusBadge = `<span class="bg-emerald-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Cleared</span>`;
+            else statusBadge = `<span class="bg-blue-400 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Pending</span>`;
+
+            const row = `
+                <tr onclick="openDetails(${index})" class="hover:bg-slate-50 transition cursor-pointer border-b border-slate-50 ${rowClass}">
+                    <td class="px-6 py-4">${statusBadge}</td>
+                    <td class="px-6 py-4 font-bold text-sm text-slate-700">${person.name}</td>
+                    <td class="px-6 py-4 text-xs text-slate-500">${person.reason}</td>
+                    <td class="px-6 py-4 text-sm font-bold">₹${person.fine}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-[11px] font-black ${person.expiry === 'EXPIRED' ? 'text-red-600 underline' : 'text-slate-600'}">
+                            ${person.expiry}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <i class="fas fa-chevron-right text-slate-300"></i>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+
+        // Popup Handlers
+        function openDetails(idx) {
+            const p = people[idx];
+            document.getElementById("pName").innerText = p.name;
+            document.getElementById("pPhone").innerText = p.phone;
+            document.getElementById("pFine").innerText = p.fine;
+            document.getElementById("pTime").innerText = p.expiry;
+            document.getElementById("detailsPopup").style.display = "flex";
+        }
+
+        function closePopup() { document.getElementById("detailsPopup").style.display = "none"; }
+        function openAction() { closePopup(); document.getElementById("actionPopup").style.display = "flex"; }
+        function closeAction() { document.getElementById("actionPopup").style.display = "none"; }
+        function openLogoutPopup() { document.getElementById("logoutPopup").style.display = "flex"; }
+        function closeLogoutPopup() { document.getElementById("logoutPopup").style.display = "none"; }
+        function confirmLogout() { window.location.href = "login.html"; }
+
+        function performAction(msg) {
+            alert(`OFFICIAL COMMAND:\nAction: ${msg}\nTarget: ${document.getElementById("pName").innerText}`);
+            closeAction();
+        }
+
+        // Global Click to Close Menu
+        window.onclick = function(e) {
+            const menu = document.getElementById('menuPopup');
+            if (!e.target.closest('.hamburger')) {
+                menu.style.display = "none";
+            }
+            if (e.target.className === 'popup' || e.target.className === 'action-popup') {
+                closePopup();
+                closeAction();
+                closeLogoutPopup();
+            }
+        }
+    </script>
+</body>
+</html>

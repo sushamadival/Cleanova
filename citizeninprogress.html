@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleanova | In Progress Issues</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ===== GLOBAL STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Background Blur Effect */
+.bg-blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR94aI7hTaWt3vKYd1fmB3IN6g35X1M6A_Uag&s');
+    background-size: cover;
+    filter: blur(8px) brightness(0.6);
+    z-index: -1;
+}
+
+/* ===== HEADER STYLING (MATCHED) ===== */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 5%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; 
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-left { display: flex; align-items: center; gap: 20px; }
+.header-center h1 { color: #2ecc71; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
+
+.menu-icon, .header-right i {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s;
+}
+.header-right i:hover, .menu-icon:hover { color: #2ecc71; }
+
+/* ===== SIDEBAR STYLING (MATCHED) ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100%;
+    background: white;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+    transition: 0.4s ease;
+    z-index: 2001;
+    padding-top: 20px;
+    overflow-y: auto;
+}
+
+.sidebar.active { left: 0; }
+
+.sidebar a {
+    padding: 12px 25px;
+    text-decoration: none;
+    font-size: 1rem;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: 0.3s;
+    border-bottom: 1px solid #f9f9f9;
+    font-weight: 600;
+}
+
+.sidebar a:hover {
+    background: #f0fff4;
+    color: #2ecc71;
+    padding-left: 35px;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 2000;
+}
+.overlay.active { display: block; }
+
+/* ===== CONTENT GRID ===== */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 40px 5%;
+}
+
+.issue-card {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.issue-card:hover { transform: translateY(-5px); }
+
+.issue-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.issue-card h4 {
+    margin: 0;
+    padding: 15px;
+    text-align: center;
+    color: #444;
+    font-size: 1rem;
+}
+
+.issue-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.issue-card:hover .issue-overlay {
+    opacity: 1;
+}
+
+/* ===== POPUP/MODAL ===== */
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.popup-content {
+    background: #fff;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 15px;
+    padding: 25px;
+    position: relative;
+}
+
+.popup-content img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+.close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #333; }
+.popup-content h3 { color: #2ecc71; margin-bottom: 10px; }
+.popup-content p { margin-bottom: 8px; line-height: 1.4; color: #555; }
+
+/* ===== FAB ===== */
+.fab {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #2ecc71;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+      /* ===== FLOATING MENU ===== */
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:9999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:9999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-blur"></div>
+<div class="overlay" id="overlay"></div>
+
+<nav class="sidebar" id="sidebar">
+    <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Cases</a>
+    <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Cases</a>
+    <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+    <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+    <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+    <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+    <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+    <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+    <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+</nav>
+
+<header>
+    <div class="header-left">
+        <i class="fas fa-bars menu-icon" id="menuBtn"></i>
+        <h2 style="font-size: 1.1rem; color: #444;">In Progress</h2>
+    </div>
+    <div class="header-center">
+        <h1>Cleanova</h1>
+    </div>
+    <div class="header-right">
+        <i class="fa-solid fa-circle-user" style="color: #2ecc71; font-size: 1.8rem;"></i>
+    </div>
+</header>
+
+<div class="container" id="issues"></div>
+
+<div class="fab">
+    <i class="fa-solid fa-plus"></i>
+</div>
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <div class="close" onclick="closePopup()">×</div>
+        <img id="pimg">
+        <h3 id="ptitle"></h3>
+        <p><b>Area:</b> <span id="ploc"></span></p>
+        <p><b>Reported:</b> <span id="prep"></span></p>
+        <p><b>Status:</b> <span style="color: #f39c12; font-weight: bold;">In Progress</span></p>
+    </div>
+</div>
+ <div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+<script>
+const issues = [
+    ["Roadside litter clean up","Puttur","30 August 2025","https://static.vecteezy.com/system/resources/previews/065/335/304/large_2x/roadside-litter-with-traffic-cone-and-workers-cleaning-up-trash-on-the-highway-shoulder-area-photo.jpeg"],
+    ["Stream cleanup","Nagara","27 January 2025","https://raleighnc.gov/sites/default/files/styles/16_9_384x216/public/2019-11/stream-cleanup-volunteer.jpg?itok=yp2TYwVO"],
+    ["Dump clearing","Highway","03 March 2025","https://www.mercurynews.com/wp-content/uploads/2018/04/sjm-l-litter-0422-02.jpg?w=525"],
+    ["Road side dumping cleaning","Highway","22 December 2025","https://static.toiimg.com/thumb/msid-125353849,imgsize-70512,width-400,height-225,resizemode-72/sweeping-change-118-truckloads-of-waste-cleared-in-mega-clean-up-drive-in-bengaluru.jpg"],
+    ["water trash clearing","MG Road","09 January 2025","https://img.freepik.com/premium-photo/men-cleaning-garbage-water_1048944-14810804.jpg"],
+    ["Road side trash cleaning","Punacha","19 June 2025","https://media.gettyimages.com/id/1479372148/photo/collecting-litter-from-the-side-of-the-road.jpg?s=612x612&w=gi&k=20&c=B_DI66Vn8MHoigGW-Gsl-Mec8MRt_prEqnkcx2ICygs="],
+    ["Garbage not collected","Bypass","10 October 2025","https://media.assettype.com/deccanherald%2Fimport%2Fsites%2Fdh%2Ffiles%2Farticleimages%2F2022%2F08%2F28%2Ffile7cixwh43yc9xko2el27-1140008-1661640526.jpg?w=undefined&auto=format%2Ccompress&fit=max"],
+    ["Lake cleanup","Lotus Lake","19 Febraury 2025","https://images.unsplash.com/photo-1758599668949-5118d71838fd?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
+    ["Roadside dumping","Highway","09 Febraury 2025","https://th-i.thgim.com/public/incoming/72yre2/article67822960.ece/alternates/FREE_1200/08_Someshwara%201.jpg"],
+    ["Lake Area","Bolwar","11 June 2025","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw3npwKEYpjfQ74CKLUGf-J7mhs7Xb_XSAjw&s"]
+];
+
+/* ===== RENDER CARDS ===== */
+document.getElementById("issues").innerHTML = issues.map((i)=>`
+<div class="issue-card" onclick="openPopup('${i[0]}','${i[1]}','${i[2]}','${i[3]}')">
+  <img src="${i[3]}">
+  <div class="issue-overlay">View Details</div>
+  <h4>${i[0]}</h4>
+</div>
+`).join("");
+
+/* ===== SIDEBAR FUNCTIONS ===== */
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+menuBtn.onclick = () => {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+};
+
+overlay.onclick = () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+};
+
+/* ===== POPUP FUNCTIONS ===== */
+function openPopup(t,l,r,img){
+  document.getElementById("ptitle").innerText=t;
+  document.getElementById("ploc").innerText=l;
+  document.getElementById("prep").innerText=r;
+  document.getElementById("pimg").src=img;
+  document.getElementById("popup").style.display="flex";
+}
+
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+window.onclick = function(event) {
+  if (event.target.className === 'popup') {
+    closePopup();
+  }
+}
+function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+</script>
+
+</body>
+</html>

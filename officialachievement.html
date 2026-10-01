@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Management Achievements | Cleanova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* Background setup */
+        .bg-blur-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnL5tPLpAYWw7Mw28PdZLHuyY-N7OKG9tirw&s');
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px);
+            transform: scale(1.1);
+            z-index: -1;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10000;
+        }
+
+        /* Sidebar/Menu Popup Style */
+        .sidebar {
+            position: absolute;
+            top: 65px; 
+            left: 15px;
+            width: 220px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            display: none; 
+            flex-direction: column;
+            z-index: 10001;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .sidebar.active {
+            display: flex;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #1e293b;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sidebar a i {
+            width: 20px;
+            color: #10b981;
+            text-align: center;
+        }
+
+        .sidebar a:hover {
+            background: #10b981;
+            color: white;
+        }
+        
+        .sidebar a:hover i {
+            color: white;
+        }
+
+        .hamburger-icon {
+            font-size: 26px;
+            cursor: pointer;
+            color: #1e293b;
+            user-select: none;
+            width: 40px;
+        }
+
+        /* Profile Style */
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* Content Styling */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-text {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .ranking-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .rank-card {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .panchayat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .panchayat-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            border-bottom: 4px solid #10b981;
+        }
+
+        .panchayat-box:hover { transform: translateY(-5px); }
+
+        @media (max-width: 1024px) { .panchayat-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { 
+            .panchayat-grid { grid-template-columns: 1fr; } 
+            .hero-text h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blur-container"></div>
+
+    <div class="page-wrapper">
+        <header class="main-header">
+            <div class="hamburger-icon" onclick="toggleMenu()" id="ham">☰</div>
+            
+            <h2 class="text-2xl font-bold text-emerald-600">Cleanova</h2>
+            
+            <div class="profile-img">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=10b981" alt="Profile" style="width:100%; height:100%;">
+            </div>
+
+            <nav class="sidebar" id="sidebar">
+                <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+                <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+                <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+                <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+                <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+                <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+                <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+                <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+            </nav>
+        </header>
+
+        <main class="content-container">
+            <section class="hero-text">
+                <h1>Achievements</h1>
+                <p>Recognizing the efforts of Panchayats in sustainable waste removal and sanitation excellence.</p>
+            </section>
+
+            <section class="ranking-info">
+                <div class="rank-card">
+                    <h3 class="font-bold text-xl mb-2">🏆 Higher Level</h3>
+                    <p>Panchayats achieving 100% waste segregation at source and zero-waste disposal.</p>
+                </div>
+                <div class="rank-card">
+                    <h3 class="font-bold text-xl mb-2">🥇 Rank 1</h3>
+                    <p>Panchayats with consistent daily collection and community awareness programs.</p>
+                </div>
+            </section>
+
+            <div id="panchayatGrid" class="panchayat-grid"></div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sidebar');
+            const ham = document.getElementById('ham');
+            
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                ham.innerHTML = "☰";
+            } else {
+                menu.classList.add('active');
+                ham.innerHTML = "×";
+            }
+        }
+
+        // Close menu if clicking outside
+        window.onclick = function(event) {
+            const menu = document.getElementById('sidebar');
+            const ham = document.getElementById('ham');
+            if (!ham.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.remove('active');
+                ham.innerHTML = "☰";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            const gridContainer = document.getElementById('panchayatGrid');
+            const panchayats = [
+                "Vellanad", "Aruvikkara", "Kallara", "Pangode", 
+                "Nedumangad", "Vithura", "Aryanad", "Uzhamalakkal", 
+                "Tholicode", "Kuttichal", "Poovachal", "Perumkadavila", 
+                "Kunnathukal", "Kollayil", "Vellarada", "Amboori", 
+                "Aryankavu", "Kadakkal", "Nilamel", "Chithara"
+            ];
+
+            panchayats.forEach((name, index) => {
+                const rank = index + 1;
+                const box = document.createElement('div');
+                let medal = rank <= 3 ? (rank === 1 ? "🥇 TOP 1" : rank === 2 ? "🥈 TOP 2" : "🥉 TOP 3") : `Rank #${rank}`;
+                
+                box.className = "panchayat-box";
+                box.innerHTML = `
+                    <div class="text-emerald-600 font-bold mb-2">${medal}</div>
+                    <h4 class="text-lg font-bold">${name}</h4>
+                    <p class="text-sm text-gray-500">Excellence in Waste Removal</p>
+                `;
+                gridContainer.appendChild(box);
+            });
+        });
+    </script>
+</body>
+</html>

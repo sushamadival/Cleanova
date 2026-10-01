@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Cleanova</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --emerald: #10b981;
+            --navy: #1e293b;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.85);
+            --primary: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--navy);
+            overflow-x: hidden;
+        }
+
+        /* Blurred Background */
+        .bg-blur-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop') center/cover;
+            filter: blur(12px) brightness(0.7);
+            z-index: -1;
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 2000;
+            transition: 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar.open { left: 0; }
+
+        .sidebar a {
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            transition: 0.2s;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sidebar a i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .sidebar a:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1500;
+        }
+
+        .overlay.active { display: block; }
+
+        /* Header */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--navy);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .menu-icon { font-size: 1.8rem; cursor: pointer; }
+
+        /* Main Layout */
+        .about-main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+        }
+
+        .hero-section h1 { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* Eco-Loop Grid */
+        .eco-loop {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .glass-card i {
+            font-size: 3rem;
+            color: var(--emerald);
+            margin-bottom: 1rem;
+        }
+
+        .glass-card.highlight { border: 2px solid var(--emerald); }
+
+        /* Impact Points */
+        .details-section {
+            background: var(--glass);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .point-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .point-item i {
+            color: var(--emerald);
+            font-size: 1.5rem;
+        }
+          .fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:9999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:9999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur-container"></div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="citizenhome.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="citizenreported.html"><i class="fa-solid fa-users"></i> Reported Cases</a>
+        <a href="citizensolved.html"><i class="fa-solid fa-check"></i> Solved Cases</a>
+        <a href="citizeninprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+        <a href="citizenreport.html"><i class="fa-solid fa-file-lines"></i> Report</a>
+        <a href="citizenachievements.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+        <a href="citizeninfo.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions</a>
+        <a href="allprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy</a>
+        <a href="citizenabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+        <a href="citizenfines.html"><i class="fa-solid fa-money-bill-1"></i> Your Fine</a>
+        <a href="citizendiscount.html"><i class="fa-solid fa-gift"></i> Discount</a>
+        <a href="citizenFAQ1.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </nav>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <i class="ph ph-list menu-icon" onclick="toggleSidebar()"></i>
+        </div>
+        <div class="header-center">Cleanova</div>
+        <div class="nav-right">
+            <i class="ph ph-user-circle menu-icon"></i>
+        </div>
+    </header>
+
+    <main class="about-main">
+        <section class="hero-section">
+            <h1>About Our Mission</h1>
+            <p>Empowering citizens to build a cleaner, greener, and more accountable city.</p>
+        </section>
+
+        <section class="eco-loop">
+            <div class="glass-card">
+                <i class="ph ph-camera"></i>
+                <h3>1. Report</h3>
+                <p>Citizens capture and upload photos of waste mismanagement in real-time.</p>
+            </div>
+            <div class="glass-card highlight">
+                <i class="ph ph-trend-up"></i>
+                <h3>2. Earn</h3>
+                <p>Verified reports earn <strong>Discounts</strong> on utility bills.</p>
+            </div>
+            <div class="glass-card">
+                <i class="ph ph-scales"></i>
+                <h3>3. Enforce</h3>
+                <p>Identified violators are issued <strong>Fines</strong> to ensure accountability.</p>
+            </div>
+        </section>
+
+        <section class="details-section">
+            <h2>Our Impact Pillars</h2>
+            <div class="points-grid">
+                <div class="point-item"><i class="ph ph-leaf"></i> <span><strong>Clean City:</strong> Active reduction of street-side pollution.</span></div>
+                <div class="point-item"><i class="ph ph-seal-check"></i> <span><strong>Verified:</strong> Official government verification for every claim.</span></div>
+                <div class="point-item"><i class="ph ph-file-text"></i> <span><strong>Transparent:</strong> Fair and automated penalty systems.</span></div>
+                <div class="point-item"><i class="ph ph-gift"></i> <span><strong>Rewards:</strong> Turning civic duty into financial gains.</span></div>
+            </div>
+        </section>
+    </main>
+         <div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+
+
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+ function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease-out';
+                observer.observe(card);
+            });
+
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

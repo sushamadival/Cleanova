@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanova | Official Support Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Custom styles for the blurred background and glass effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        .bg-blur-image {
+            background: url('https://media.istockphoto.com/id/1345370511/vector/food-waste-concept.jpg?s=612x612&w=0&k=20&c=u7ErMMUSE88OVB9EvbLRi3n5UBSE2Y1ThXPUCZN_HoY=');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .custom-blur-overlay {
+            background: rgba(1, 45, 33, 0.75); /* Dark green tint */
+            backdrop-filter: blur(8px);
+        }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px; /* Hidden by default */
+            width: 300px;
+            height: 100%;
+            background: rgba(1, 30, 22, 0.95);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            padding-top: 80px;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 30px;
+            color: #a39c9c;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar a i {
+            width: 20px;
+            color: #f4faf8;
+        }
+        .sidebar a:hover {
+            background: rgba(125, 133, 130, 0.1);
+            padding-left: 40px;
+            color: #d8dad9;
+        }
+
+        /* Overlay */
+        #sidebarOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        /* Vehicle Popup Styling */
+        .vehicle-popup {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .v-popup-box {
+            background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 30px; position: relative; text-align: center; color: #333;
+        }
+        /* ===== FLOATING MENU ===== */
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:22px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00d09c,#00a3ff);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  z-index:1999;
+}
+
+.fab-menu{
+  position:fixed;
+  right:24px;
+  bottom:90px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:1999;
+}
+
+.fab-menu a{
+  width:48px;
+  height:48px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#00d09c;
+  font-size:20px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+  text-decoration:none;
+}
+    </style>
+</head>
+<body class="bg-blur-image min-h-screen text-white font-sans overflow-x-hidden">
+
+    <div class="fixed inset-0 custom-blur-overlay -z-10"></div>
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <button onclick="toggleSidebar()" class="absolute top-5 right-5 text-white/50 hover:text-white text-2xl">&times;</button>
+        <a href="mainall.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="mainall.html"><i class="fa-solid fa-list-ul"></i> All</a>
+        <a href="mainachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+        <a href="citizenfaq.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+        <a href="mainsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+        <a href="maininstruction.html"><i class="fa-solid fa-chalkboard-user"></i> Instructions & Info</a>
+        <a href="mainreport.html#"><i class="fa-solid fa-thumbtack"></i> Report</a>
+        <a href="mainprivacy.html"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+        <a href="mainabout.html"><i class="fa-solid fa-address-card"></i> About Us</a>
+    </nav>
+   
+<div class="fab" onclick="toggleFabMenu(event)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+<div class="fab-menu" id="fabMenu">
+  <a href="tel:9876543210"><i class="fa-solid fa-phone"></i></a>
+  <a href="sms:9876543210"><i class="fa-solid fa-message"></i></a>
+</div>
+    <header class="flex justify-between items-center p-6 border-b border-white/10 sticky top-0 z-50 bg-emerald-950/20 backdrop-blur-md">
+        <div class="flex items-center gap-6">
+            <div class="cursor-pointer space-y-1.5 p-2 hover:bg-white/10 rounded-lg transition" onclick="toggleSidebar()">
+                <div class="w-8 h-1 bg-white"></div>
+                <div class="w-8 h-1 bg-white"></div>
+                <div class="w-8 h-1 bg-white"></div>
+            </div>
+            
+            </div>
+        </div>
+
+        <h1 class="text-2xl font-bold tracking-widest text-emerald-400">CLEANOVA </h1>
+
+        <a href="login.html" class="bg-white text-emerald-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white transition shadow-lg">
+            Login
+        </a>
+    </header>
+
+    
+    
+
+    <main class="container mx-auto py-12 px-6">
+        <div class="mb-10 text-center">
+            <h2 class="text-4xl font-extrabold mb-2">Governmental Petitions</h2>
+            <p class="text-emerald-200/80">Active support cases pending or resolved by high-ranking officials</p>
+        </div>
+
+        <div id="supportGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>
+    </main>
+
+    <div id="supportModal" class="fixed inset-0 hidden bg-black/80 flex items-center justify-center z-50 p-4">
+        <div class="bg-white text-gray-900 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="p-8">
+                <div class="flex justify-between items-start border-b pb-4 mb-4">
+                    <div>
+                        <h3 id="modalIssue" class="text-2xl font-bold text-emerald-900"></h3>
+                        <p id="modalOfficial" class="text-emerald-600 font-semibold"></p>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 text-3xl font-light">&times;</button>
+                </div>
+                
+                <div class="space-y-4">
+                    <p class="text-sm font-bold text-gray-400 uppercase tracking-tighter">Detailed Description</p>
+                    <p id="modalDesc" class="text-gray-700 leading-relaxed"></p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl flex justify-between items-center">
+                        <span class="text-xs text-gray-500 font-medium">Request Timeline:</span>
+                        <span id="modalDate" class="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full"></span>
+                    </div>
+                </div>
+
+                <button onclick="closeModal()" class="mt-8 w-full bg-emerald-600 text-white font-bold py-4 rounded-xl hover:bg-emerald-700 transition">
+                    Close Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFabMenu(event) {
+  event.stopPropagation();
+  const fab = document.getElementById("fabMenu");
+  fab.style.display = (fab.style.display === "flex") ? "none" : "flex";
+}
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        }
+
+        // Support Records
+        const supportData = [
+            { official: "Mayor Sarah Johnson", issue: "City-Wide Composting", date: "Jan 10, 2026", desc: "Official support granted for the rollout of green-waste bins across all residential wards." },
+            { official: "Gov. Michael Reed", issue: "Landfill Rehabilitation", date: "Jan 12, 2026", desc: "Approval for methane capture technology installation at the North-East landfill site." },
+            { official: "District Comm. Lee", issue: "Industrial Waste Audit", date: "Jan 15, 2026", desc: "Mandatory waste reporting for all chemical plants within 50 miles of the coastline." },
+            { official: "Sen. David Vane", issue: "Ocean Plastic Ban", date: "Jan 18, 2026", desc: "Legislative backing for the complete removal of single-use plastics in the hospitality sector." },
+            { official: "Env. Minister Chloe", issue: "Clean Air Initiative", date: "Jan 20, 2026", desc: "Support for electric waste collection trucks to reduce urban carbon emissions." },
+            { official: "Health Dept Chair", issue: "Hazardous Waste Site", date: "Jan 22, 2026", desc: "Emergency funding for the containment of toxic runoff in the industrial valley." },
+            { official: "Board of Works", issue: "Drainage Desilting", date: "Jan 25, 2026", desc: "Major infrastructure support for deep-cleaning city drainage before the monsoon season." },
+            { official: "Urban Planning Dir.", issue: "Zero-Waste Zoning", date: "Jan 28, 2026", desc: "New zoning laws requiring all new developments to include built-in recycling centers." },
+            { official: "Public Safety Chief", issue: "Illegal Dumping Patrols", date: "Feb 01, 2026", desc: "Increased drone surveillance support for detecting illegal midnight dumping activities." },
+            { official: "Education Board", issue: "Student Recycling Drive", date: "Feb 03, 2026", desc: "Curriculum integration of Cleanova's 'Waste Wise' program in 200 public schools." }
+        ];
+
+        const grid = document.getElementById('supportGrid');
+
+        // Create cards
+        supportData.forEach((item) => {
+            const card = document.createElement('div');
+            card.className = 'glass p-8 rounded-3xl cursor-pointer group';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <span class="text-xs font-bold text-emerald-300 uppercase tracking-widest">${item.date}</span>
+                    <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500 transition">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition">${item.issue}</h3>
+                <p class="text-sm text-gray-300 mb-4">${item.official}</p>
+                <div class="h-1 w-12 bg-emerald-500 rounded-full group-hover:w-full transition-all"></div>
+            `;
+            card.onclick = () => openModal(item);
+            grid.appendChild(card);
+        });
+
+        // Modal Functions
+        function openModal(data) {
+            document.getElementById('modalIssue').innerText = data.issue;
+            document.getElementById('modalOfficial').innerText = "Supported by " + data.official;
+            document.getElementById('modalDesc').innerText = data.desc;
+            document.getElementById('modalDate').innerText = "Approved: " + data.date;
+            document.getElementById('supportModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('supportModal').classList.add('hidden');
+        }
+
+        // Vehicle Tracking Functions
+        function openVehiclePopup() {
+            document.getElementById('vehiclePopup').style.display = 'flex';
+        }
+
+        
+        // Close popups on background click
+        window.onclick = function(event) {
+            const vPopup = document.getElementById('vehiclePopup');
+            const sModal = document.getElementById('supportModal');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (event.target == vPopup) closeVehiclePopup();
+            if (event.target == sModal) closeModal();
+            if (event.target == overlay) toggleSidebar();
+        }
+    </script>
+</body>
+</html>

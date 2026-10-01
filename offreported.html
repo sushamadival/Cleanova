@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reported Issues</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --green:#00d09c;
+  --blue:#00a3ff;
+  --bg:#f4f6f8;
+}
+
+body{ margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:#333; }
+
+/* ===== HEADER ===== */
+header{
+  display:flex; align-items:center; padding:14px 18px;
+  background:linear-gradient(90deg, var(--green), var(--blue));
+  color:#fff; position:sticky; top:0; z-index:1000;
+}
+.hamburger{ font-size:28px; cursor:pointer; margin-right: 15px; }
+header h1{ flex:1; text-align:center; margin:0; font-size:20px; }
+
+header h2 {
+ position: relative;
+  right: 1011px;   /* 👈 shifts right */
+  margin: 0;
+  font-size:20px;
+}
+
+
+/* ===== MENU ===== */
+.menu{
+  position:absolute; top:60px; left:15px; background:#fff; border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2); display:none; width: 220px; z-index: 1001;
+}
+.menu a{ display:block; padding:14px 20px; text-decoration:none; color:#333; border-bottom:1px solid #eee; }
+.menu a:hover{ background:var(--green); color:#fff; }
+
+/* ===== STATS ===== */
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px; padding:15px; }
+.stat{ background:white; border-radius:12px; padding:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); text-align:center; }
+.stat i{ color:var(--green); font-size: 20px; }
+.stat h2{ margin: 5px 0; font-size: 18px; }
+
+/* ===== FILTERS & SEARCH ===== */
+.filters{ display:flex; gap:8px; justify-content:center; margin:10px; flex-wrap: wrap; }
+.filter{ padding:8px 14px; border-radius:20px; background:white; text-decoration:none; color:#555; font-size:13px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.filter.active { background:var(--green); color:white; }
+
+.search{ display:flex; justify-content:center; margin-bottom:15px; }
+.search input{ width:85%; max-width:400px; padding:12px; border-radius:25px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1); outline:none; }
+
+/* ===== GRID ===== */
+.container{ padding:15px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+.issue-card{ background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.1); position:relative; }
+.issue-card img{ width:100%; height:180px; object-fit:cover; display:block; }
+.issue-overlay{ position:absolute; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:#fff; opacity:0; transition:0.3s; cursor:pointer; height:180px; }
+.issue-card:hover .issue-overlay{ opacity:1; }
+.issue-card h4{ padding:15px; margin:0; }
+
+/* ===== POPUPS ===== */
+.popup{ position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:2000; padding:20px; }
+.popup-content{ background:#fff; width:100%; max-width:400px; border-radius:20px; padding:20px; position:relative; max-height: 90vh; overflow-y: auto; }
+.close-btn{ position:absolute; top:15px; right:15px; font-size:20px; cursor:pointer; color:#888; }
+
+.btn-main{ width:100%; padding:12px; margin-top:10px; border:none; border-radius:10px; background:var(--green); color:white; font-weight:bold; cursor:pointer; }
+.btn-choice{ width:100%; padding:15px; margin-top:10px; border:1px solid #ddd; border-radius:12px; background:#f9f9f9; text-align:left; cursor:pointer; font-size:16px; display:flex; align-items:center; gap:10px; }
+.btn-choice:hover{ border-color:var(--green); background:#eefbf7; }
+
+/* FORM ELEMENTS */
+.form-group{ margin-top:15px; }
+.form-group label{ display:block; font-size:13px; font-weight:bold; margin-bottom:5px; }
+.form-group input{ width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; }
+.upload-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.upload-btn{ border:1px dashed var(--green); padding:15px; border-radius:10px; text-align:center; cursor:pointer; color:var(--green); background:#f0fffb; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hamburger" onclick="toggleMenu()" id="ham">☰</div>
+  <h1>Cleanova</h1>
+  <h2><i class="fa-solid fa-users"></i><h2>Reported Issues</h2>
+  <div class="menu" id="menu">
+     <a href="officialhome.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="offreported.html"><i class="fa-solid fa-flag"></i> Reported</a>
+    <a href="offinprogress.html"><i class="fa-solid fa-spinner"></i> In Progress</a>
+    <a href="offsolved.html"><i class="fa-solid fa-check-double"></i> Solved</a>
+    <a href="officialachievement.html"><i class="fa-solid fa-trophy"></i> Achievements</a>
+    <a href="officialFAQ.html"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="officialrequest.html"><i class="fa-solid fa-file-signature"></i> Request</a>
+    <a href="officialsupport.html"><i class="fa-solid fa-headset"></i> Support</a>
+    <a href="offfine.html"><i class="fa-solid fa-clipboard-list"></i> Fine List</a>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><i class="fa-solid fa-check"></i><h2>128 Solved</h2></div>
+  <div class="stat"><i class="fa-solid fa-spinner"></i><h2>14 Progress</h2></div>
+  <div class="stat"><i class="fa-solid fa-users"></i><h2>10 Reported</h2></div>
+</div>
+
+<div class="filters">
+  <a href="offsolved.html" class="filter">Solved</a>
+  <a href="offinprogress.html" class="filter">In Progress</a>
+  <a href="#" class="filter active">Reported</a>
+</div>
+
+<div class="search">
+  <input type="text" placeholder="Search by area or issue...">
+</div>
+
+<div class="container" id="issueContainer"></div>
+
+<div class="popup" id="detailsPopup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('detailsPopup')">✖</span>
+    <img id="pimg">
+    <h3 id="ptitle" style="margin:15px 0 10px 0;"></h3>
+    <p><b>Area:</b> <span id="ploc"></span></p>
+    <p><b>Date:</b> <span id="pdate"></span></p>
+    <p><b>Status:</b> <span style="color:red; font-weight:bold;">Reported</span></p>
+    <button class="btn-main" onclick="openUpdateOptions()">Update Issue</button>
+  </div>
+</div>
+
+<div class="popup" id="updateChoicePopup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('updateChoicePopup')">✖</span>
+    <h3>Select Status Update</h3>
+    <button class="btn-choice" onclick="openSolvedForm()">
+      <i class="fa-solid fa-circle-check" style="color:var(--green)"></i> Mark as Solved
+    </button>
+    <button class="btn-choice" onclick="openProgressForm()">
+      <i class="fa-solid fa-spinner" style="color:var(--blue)"></i> Set to In Progress
+    </button>
+  </div>
+</div>
+
+<div class="popup" id="solvedPopup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('solvedPopup')">✖</span>
+    <h3>Solve Issue</h3>
+    <div class="form-group">
+      <label>Completion Date</label>
+      <input type="date">
+    </div>
+    <div class="form-group">
+      <label>Fine Amount (₹)</label>
+      <input type="number" placeholder="Enter amount">
+    </div>
+    <div class="form-group">
+      <label>Rewards Given</label>
+      <input type="text" placeholder="Points or Gift">
+    </div>
+    <div class="form-group">
+      <label>Proof of Work</label>
+      <div class="upload-grid">
+        <label class="upload-btn" for="cam-s"><i class="fa-solid fa-camera"></i> Camera</label>
+        <input type="file" id="cam-s" capture="environment" accept="image/*" style="display:none">
+        <label class="upload-btn" for="gal-s" style="border-color:#ccc; color:#888; background:#f9f9f9;"><i class="fa-solid fa-image"></i> Gallery</label>
+        <input type="file" id="gal-s" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <button class="btn-main" onclick="showFinalMsg('Issue marked as Solved!')">Submit & Solve</button>
+  </div>
+</div>
+
+<div class="popup" id="progressPopup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('progressPopup')">✖</span>
+    <h3>Set to In Progress</h3>
+    <p style="font-size:14px; color:#666;">Upload a photo of workers at the site to start progress.</p>
+    <div class="form-group">
+      <label>Site Photo</label>
+      <div class="upload-grid">
+        <label class="upload-btn" for="cam-p"><i class="fa-solid fa-camera"></i> Camera</label>
+        <input type="file" id="cam-p" capture="environment" accept="image/*" style="display:none">
+        <label class="upload-btn" for="gal-p" style="border-color:#ccc; color:#888; background:#f9f9f9;"><i class="fa-solid fa-image"></i> Gallery</label>
+        <input type="file" id="gal-p" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <button class="btn-main" onclick="showFinalMsg('Issue moved to In Progress!')">Start Work</button>
+  </div>
+</div>
+
+<div class="popup" id="finalPopup">
+  <div class="popup-content" style="text-align:center;">
+    <i class="fa-solid fa-circle-check" style="font-size:50px; color:var(--green);"></i>
+    <h2 id="finalMsg">Success!</h2>
+    <button class="btn-main" onclick="location.reload()">Done</button>
+  </div>
+</div>
+
+<script>
+ 
+const issues=[
+  ["Water trash","Puttur town","07 Nov 2025","https://www.shutterstock.com/image-photo/ca-mau-vietnam-may-19th-260nw-1106812433.jpg"],
+  ["Roadside littering","Main Road","02 Sep 2025","https://media.istockphoto.com/id/649924830/photo/garbage-inside-the-forest-near-road.jpg?s=612x612&w=0&k=20&c=NsUC5RuRFnqNIDxGoyokVoCe-v4fUOOqmzNWdB1d-XA="],
+  ["Overflowing trashbin","Darbe","03 Aug 2025","https://images.stockcake.com/public/f/a/d/fadace01-740e-4753-9bd3-9dfbc15bde57_large/overflowing-trash-bin-stockcake.jpg"],
+  ["Trashbin Waste not collected","Krishna Nagara","28 Dec 2025","https://t3.ftcdn.net/jpg/02/90/92/92/360_F_290929282_X9GuRfHDe9dLl5wteAxo8vgHCG0YP2om.jpg"],
+  ["Illegal Dumping ","Main Road","30 Nov 2025","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTG8kS5q8oK0q1Fix5pkUtpCmRhsYJk_50d7w&s"],
+  ["Garbage in roadside","Main Road","16 Apr 2025","https://media.gettyimages.com/id/1479366571/photo/rubbish-littering-grass-verge.jpg?s=612x612&w=gi&k=20&c=lhiAuYbGtLw7l56KUKj1dVeRpJB5qkMazDsNYgZ8aAk="],
+  ["Trashbin Overflow","Panchayat Road","02 Oct 2025","https://www.shutterstock.com/image-photo/pile-trash-waste-bins-dustbins-260nw-2281547923.jpg"],
+  ["Water trash","City Lake","25 Dec 2025","https://img.freepik.com/free-photo/pollution-river-with-plastic-waste_23-2151995193.jpg?semt=ais_hybrid&w=740&q=80"],
+  ["Roadside dumping","Town Road","04 Feb 2025","https://static.toiimg.com/thumb/msid-121787099,width-1070,height-580,imgsize-77414,resizemode-75,overlay-toi_sw,pt-32,y_pad-40/photo.jpg"],
+  ["Road side dumping","Highway","09 Feb 2025","https://www.brisbane.qld.gov.au/content/dam/brisbanecitycouncil/corpwebsite/bins-waste-and-recycling/images/2022-flood-damage-corro-drive_12.jpg/_jcr_content/renditions/cq5dam.web.1280.1280.jpeg"]
+];
+
+// RENDER CARDS
+document.getElementById("issueContainer").innerHTML = issues.map(i => `
+  <div class="issue-card">
+    <img src="${i[3]}">
+    <div class="issue-overlay" onclick="openDetails('${i[0]}','${i[1]}','${i[2]}','${i[3]}')">View Details</div>
+    <h4>${i[0]}</h4>
+  </div>
+`).join("");
+
+// NAVIGATION
+function toggleMenu(){
+  const m = document.getElementById("menu");
+  const h = document.getElementById("ham");
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  h.innerHTML = (m.style.display === "block") ? "✖" : "☰";
+}
+
+// POPUP LOGIC
+function openDetails(t, l, d, img){
+  document.getElementById("ptitle").innerText = t;
+  document.getElementById("ploc").innerText = l;
+  document.getElementById("pdate").innerText = d;
+  document.getElementById("pimg").src = img;
+  document.getElementById("detailsPopup").style.display = "flex";
+}
+
+function openUpdateOptions(){
+  closePopup('detailsPopup');
+  document.getElementById("updateChoicePopup").style.display = "flex";
+}
+
+function openSolvedForm(){
+  closePopup('updateChoicePopup');
+  document.getElementById("solvedPopup").style.display = "flex";
+}
+
+function openProgressForm(){
+  closePopup('updateChoicePopup');
+  document.getElementById("progressPopup").style.display = "flex";
+}
+
+function showFinalMsg(msg){
+  closePopup('solvedPopup');
+  closePopup('progressPopup');
+  document.getElementById("finalMsg").innerText = msg;
+  document.getElementById("finalPopup").style.display = "flex";
+}
+
+function closePopup(id){ document.getElementById(id).style.display = "none"; }
+
+// Auto-close menu on click outside
+window.onclick = function(event) {
+  if (!event.target.matches('.hamburger')) {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("ham").innerHTML = "☰";
+  }
+}
+</script>
+
+</body>
+</html>
